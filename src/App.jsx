@@ -223,7 +223,7 @@ export default function App() {
   );
 }
 
-// Wrapper for Step-by-Step Progressive Subtle Blur & Lock System
+// Wrapper for Step-by-Step Progressive Subtle Blur & Clickable Lock System
 function SectionWrapper({ children, idx, unlockedMaxIndex, id, title, onUnlockClick }) {
   const isUnlocked = idx <= unlockedMaxIndex;
 
@@ -234,18 +234,28 @@ function SectionWrapper({ children, idx, unlockedMaxIndex, id, title, onUnlockCl
         position: 'relative',
         minHeight: '100vh',
         width: '100%',
-        filter: isUnlocked ? 'none' : 'blur(5px)',
-        opacity: isUnlocked ? 1 : 0.6,
-        pointerEvents: isUnlocked ? 'auto' : 'none',
-        transition: 'all 0.6s ease',
-        userSelect: isUnlocked ? 'auto' : 'none'
+        zIndex: 2
       }}
     >
-      {children}
+      {/* Inner Content (Blurred when locked) */}
+      <div
+        style={{
+          width: '100%',
+          minHeight: '100vh',
+          filter: isUnlocked ? 'none' : 'blur(6px)',
+          opacity: isUnlocked ? 1 : 0.45,
+          pointerEvents: isUnlocked ? 'auto' : 'none',
+          transition: 'filter 0.6s ease, opacity 0.6s ease',
+          userSelect: isUnlocked ? 'auto' : 'none'
+        }}
+      >
+        {children}
+      </div>
 
-      {/* Subtle Locked Overlay Badge */}
+      {/* Subtle Clickable Locked Overlay Badge */}
       {!isUnlocked && (
         <div
+          onClick={onUnlockClick}
           style={{
             position: 'absolute',
             inset: 0,
@@ -256,50 +266,54 @@ function SectionWrapper({ children, idx, unlockedMaxIndex, id, title, onUnlockCl
             justifyContent: 'center',
             background: 'rgba(5, 5, 12, 0.45)',
             backdropFilter: 'blur(3px)',
-            pointerEvents: 'auto',
+            cursor: 'pointer',
             padding: '20px'
           }}
         >
           <div
             className="glass-panel-glow"
             style={{
-              padding: '20px 28px',
+              padding: '24px 32px',
               borderRadius: '24px',
               textAlign: 'center',
-              border: '1px solid rgba(255, 42, 141, 0.5)',
+              border: '1px solid rgba(255, 42, 141, 0.6)',
               boxShadow: '0 10px 40px rgba(0,0,0,0.85)',
-              maxWidth: '360px',
-              width: '90%'
+              maxWidth: '380px',
+              width: '90%',
+              pointerEvents: 'auto'
             }}
           >
-            <div style={{ background: 'rgba(255, 42, 141, 0.15)', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-              <Lock size={24} color="#ff2a8d" />
+            <div style={{ background: 'rgba(255, 42, 141, 0.2)', width: '52px', height: '52px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+              <Lock size={26} color="#ff2a8d" />
             </div>
-            <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#fbbf24', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#fbbf24', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px' }}>
               LEVEL {idx + 1} LOCKED 🔒
             </div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#ffffff', marginBottom: '12px' }}>
+            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#ffffff', marginBottom: '14px' }}>
               {title}
             </div>
             <button
-              onClick={onUnlockClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUnlockClick();
+              }}
               style={{
                 background: 'linear-gradient(135deg, #ff2a8d 0%, #ff758c 100%)',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '30px',
-                padding: '10px 22px',
-                fontSize: '0.85rem',
+                padding: '12px 24px',
+                fontSize: '0.9rem',
                 fontWeight: '700',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px',
-                boxShadow: '0 4px 15px rgba(255, 42, 141, 0.4)'
+                gap: '8px',
+                boxShadow: '0 4px 20px rgba(255, 42, 141, 0.5)'
               }}
             >
-              <Unlock size={14} />
-              <span>UNLOCK & PLAY STEP {idx + 1}</span>
+              <Unlock size={16} />
+              <span>TAP TO UNLOCK LEVEL {idx + 1} ✨</span>
             </button>
           </div>
         </div>
