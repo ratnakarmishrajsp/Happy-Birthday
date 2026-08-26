@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import { Sparkles, Rocket } from 'lucide-react';
 
-function WarpStars({ count = 1200 }) {
+function WarpStars({ count = 1500 }) {
   const points = useRef();
 
   const [positions, speeds, colors] = useMemo(() => {
@@ -21,11 +21,11 @@ function WarpStars({ count = 1200 }) {
     ];
 
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 40;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 40;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 60; // Z depth
+      pos[i * 3] = (Math.random() - 0.5) * 45;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 45;
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 60;
 
-      spd[i] = 1.2 + Math.random() * 2.5; // Fast forward speed
+      spd[i] = 1.5 + Math.random() * 3.0;
 
       const color = palette[Math.floor(Math.random() * palette.length)];
       col[i * 3] = color.r;
@@ -40,16 +40,15 @@ function WarpStars({ count = 1200 }) {
     if (points.current) {
       const positionsArr = points.current.geometry.attributes.position.array;
       for (let i = 0; i < count; i++) {
-        // Move towards camera (Z increase)
-        positionsArr[i * 3 + 2] += speeds[i] * delta * 45;
+        positionsArr[i * 3 + 2] += speeds[i] * delta * 55;
         if (positionsArr[i * 3 + 2] > 20) {
           positionsArr[i * 3 + 2] = -50;
-          positionsArr[i * 3] = (Math.random() - 0.5) * 40;
-          positionsArr[i * 3 + 1] = (Math.random() - 0.5) * 40;
+          positionsArr[i * 3] = (Math.random() - 0.5) * 45;
+          positionsArr[i * 3 + 1] = (Math.random() - 0.5) * 45;
         }
       }
       points.current.geometry.attributes.position.needsUpdate = true;
-      points.current.rotation.z += delta * 1.5; // Spiral rotate warp tunnel
+      points.current.rotation.z += delta * 2.0;
     }
   });
 
@@ -70,7 +69,7 @@ function WarpStars({ count = 1200 }) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.18}
+        size={0.2}
         vertexColors
         transparent
         opacity={0.9}
@@ -86,10 +85,10 @@ function EnergyRings() {
   useFrame((state, delta) => {
     if (group.current) {
       group.current.children.forEach((ring, idx) => {
-        ring.scale.x += delta * (2.5 + idx * 0.5);
-        ring.scale.y += delta * (2.5 + idx * 0.5);
-        ring.rotation.z += delta * (1 + idx * 0.3);
-        if (ring.scale.x > 8) {
+        ring.scale.x += delta * (3 + idx * 0.8);
+        ring.scale.y += delta * (3 + idx * 0.8);
+        ring.rotation.z += delta * (1.5 + idx * 0.4);
+        if (ring.scale.x > 10) {
           ring.scale.set(0.1, 0.1, 0.1);
         }
       });
@@ -98,13 +97,13 @@ function EnergyRings() {
 
   return (
     <group ref={group}>
-      {[1, 2, 3, 4].map((i) => (
+      {[1, 2, 3, 4, 5].map((i) => (
         <mesh key={i} position={[0, 0, -5 - i * 3]} scale={[0.2, 0.2, 0.2]}>
-          <ringGeometry args={[1, 1.2, 32]} />
+          <ringGeometry args={[1, 1.3, 32]} />
           <meshBasicMaterial
             color={i % 2 === 0 ? '#ff2a8d' : '#9d4edd'}
             transparent
-            opacity={0.7}
+            opacity={0.8}
             side={THREE.DoubleSide}
             blending={THREE.AdditiveBlending}
           />
@@ -142,44 +141,45 @@ export default function CosmicWarpOverlay({ isWarping, nextStageTitle = 'Next Me
           {/* 3D Hyperspace Warp Canvas */}
           <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
             <Canvas camera={{ position: [0, 0, 10], fov: 75 }}>
-              <WarpStars count={1500} />
+              <WarpStars count={1800} />
               <EnergyRings />
             </Canvas>
           </div>
 
-          {/* Central Warp Glow Pulse */}
+          {/* Fullscreen Expanding Cosmic Sphere Wave Animation */}
           <motion.div
             animate={{
-              scale: [0.8, 1.5, 2.5],
-              opacity: [0.3, 0.8, 0]
+              scale: [0.5, 3.5, 30],
+              opacity: [0.3, 0.95, 0]
             }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
+            transition={{ duration: 1.7, ease: 'easeInOut' }}
             style={{
               position: 'absolute',
-              width: '300px',
-              height: '300px',
+              width: '180px',
+              height: '180px',
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(255,42,141,0.6) 0%, rgba(157,78,221,0.3) 50%, rgba(0,0,0,0) 80%)',
-              filter: 'blur(30px)'
+              background: 'radial-gradient(circle, rgba(255,42,141,0.9) 0%, rgba(157,78,221,0.7) 45%, rgba(251,191,36,0.5) 75%, rgba(0,0,0,0) 100%)',
+              filter: 'blur(20px)',
+              boxShadow: '0 0 80px rgba(255, 42, 141, 0.9)'
             }}
           />
 
-          {/* Animated Cosmic Text Banner */}
+          {/* Central Warp Text Banner */}
           <motion.div
             initial={{ scale: 0.5, y: 30, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 1.3, opacity: 0 }}
+            exit={{ scale: 1.4, opacity: 0 }}
             transition={{ duration: 0.5 }}
             style={{
               position: 'relative',
               zIndex: 10,
               textAlign: 'center',
               padding: '24px 36px',
-              background: 'rgba(15, 12, 35, 0.75)',
-              border: '2px solid rgba(255, 42, 141, 0.6)',
+              background: 'rgba(15, 12, 35, 0.82)',
+              border: '2px solid rgba(255, 42, 141, 0.65)',
               borderRadius: '24px',
               backdropFilter: 'blur(16px)',
-              boxShadow: '0 0 40px rgba(255, 42, 141, 0.6)',
+              boxShadow: '0 0 50px rgba(255, 42, 141, 0.7)',
               maxWidth: '90%'
             }}
           >
@@ -188,7 +188,7 @@ export default function CosmicWarpOverlay({ isWarping, nextStageTitle = 'Next Me
               transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
               style={{ display: 'inline-block', marginBottom: '12px' }}
             >
-              <Rocket size={36} color="#ff758c" />
+              <Rocket size={38} color="#ff758c" />
             </motion.div>
 
             <h2

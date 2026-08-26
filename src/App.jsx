@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Background3D from './canvas/Background3D';
 import CosmicWarpOverlay from './canvas/CosmicWarpOverlay';
-import StageHeader from './components/StageHeader';
 import AudioController from './components/AudioController';
 
 import Section01_Loading from './components/Section01_Loading';
@@ -37,7 +36,6 @@ const STAGES = [
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentStageIndex, setCurrentStageIndex] = useState(0);
-  const [unlockedStageIndex, setUnlockedStageIndex] = useState(0);
   const [isWarping, setIsWarping] = useState(false);
   const [nextStageTitle, setNextStageTitle] = useState('');
 
@@ -50,9 +48,6 @@ export default function App() {
 
     setTimeout(() => {
       setCurrentStageIndex(targetIndex);
-      if (targetIndex > unlockedStageIndex) {
-        setUnlockedStageIndex(targetIndex);
-      }
     }, 800);
 
     setTimeout(() => {
@@ -65,17 +60,9 @@ export default function App() {
     warpToStage(currentStageIndex + 1);
   };
 
-  const handlePrevStage = () => {
-    if (currentStageIndex > 0) {
-      warpToStage(currentStageIndex - 1);
-    }
-  };
-
   const handleReplay = () => {
     warpToStage(0);
   };
-
-  const CurrentSectionComponent = STAGES[currentStageIndex].component;
 
   return (
     <div style={{ position: 'relative', minHeight: '100vh', width: '100vw', overflowX: 'hidden' }}>
@@ -92,42 +79,30 @@ export default function App() {
       {isLoading ? (
         <Section01_Loading onComplete={() => setIsLoading(false)} />
       ) : (
-        <>
-          {/* Top Stage Level Header */}
-          <StageHeader
-            currentStageIndex={currentStageIndex}
-            totalStages={STAGES.length}
-            stageTitle={STAGES[currentStageIndex].title}
-            onPrevStage={handlePrevStage}
-            canGoPrev={currentStageIndex > 0 && !isWarping}
-          />
-
-          {/* Active Stage Rendered With Zoom Fade Transition */}
-          <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', paddingTop: '60px' }}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStageIndex}
-                initial={{ opacity: 0, scale: 0.85, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, scale: 1.25, filter: 'blur(15px)' }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                style={{ width: '100%', minHeight: 'calc(100vh - 60px)' }}
-              >
-                {currentStageIndex === 0 && <Section02_Hero onStartSurprise={handleNextStage} />}
-                {currentStageIndex === 1 && <Section03_Verification onVerified={handleNextStage} />}
-                {currentStageIndex === 2 && <Section04_BrotherQuiz onQuizComplete={handleNextStage} />}
-                {currentStageIndex === 3 && <Section05_RoastWall onNextSection={handleNextStage} />}
-                {currentStageIndex === 4 && <Section06_TeaIncident onNextSection={handleNextStage} />}
-                {currentStageIndex === 5 && <Section07_GardenIncident onNextSection={handleNextStage} />}
-                {currentStageIndex === 6 && <Section08_MemoryUniverse onNextSection={handleNextStage} />}
-                {currentStageIndex === 7 && <Section09_SisterQuiz onQuizComplete={handleNextStage} />}
-                {currentStageIndex === 8 && <Section10_SecretLock onUnlockFinal={handleNextStage} />}
-                {currentStageIndex === 9 && <Section11_FinalReveal onProceedToFinale={handleNextStage} />}
-                {currentStageIndex === 10 && <Section12_GrandFinale onReplay={handleReplay} />}
-              </motion.div>
-            </AnimatePresence>
-          </main>
-        </>
+        <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStageIndex}
+              initial={{ opacity: 0, scale: 0.85, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, scale: 1.25, filter: 'blur(15px)' }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              style={{ width: '100%', minHeight: '100vh' }}
+            >
+              {currentStageIndex === 0 && <Section02_Hero onStartSurprise={handleNextStage} />}
+              {currentStageIndex === 1 && <Section03_Verification onVerified={handleNextStage} />}
+              {currentStageIndex === 2 && <Section04_BrotherQuiz onQuizComplete={handleNextStage} />}
+              {currentStageIndex === 3 && <Section05_RoastWall onNextSection={handleNextStage} />}
+              {currentStageIndex === 4 && <Section06_TeaIncident onNextSection={handleNextStage} />}
+              {currentStageIndex === 5 && <Section07_GardenIncident onNextSection={handleNextStage} />}
+              {currentStageIndex === 6 && <Section08_MemoryUniverse onNextSection={handleNextStage} />}
+              {currentStageIndex === 7 && <Section09_SisterQuiz onQuizComplete={handleNextStage} />}
+              {currentStageIndex === 8 && <Section10_SecretLock onUnlockFinal={handleNextStage} />}
+              {currentStageIndex === 9 && <Section11_FinalReveal onProceedToFinale={handleNextStage} />}
+              {currentStageIndex === 10 && <Section12_GrandFinale onReplay={handleReplay} />}
+            </motion.div>
+          </AnimatePresence>
+        </main>
       )}
     </div>
   );

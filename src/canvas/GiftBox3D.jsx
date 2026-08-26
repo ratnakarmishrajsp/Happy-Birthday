@@ -131,19 +131,22 @@ function Balloon({ position, color, speed = 1, onClick }) {
 }
 
 export default function GiftBox3D({ isOpen, onBoxClick }) {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   return (
-    <div style={{ width: '100%', height: '380px', position: 'relative', cursor: 'pointer' }}>
-      <Canvas camera={{ position: [0, 1.5, 4.2], fov: 45 }}>
+    <div style={{ width: '100%', height: isMobile ? '320px' : '380px', position: 'relative', cursor: 'pointer' }}>
+      <Canvas camera={{ position: [0, 1.5, isMobile ? 5.4 : 4.2], fov: isMobile ? 52 : 45 }}>
         <ambientLight intensity={0.7} />
         <pointLight position={[5, 6, 5]} intensity={2} color="#ffffff" />
         <pointLight position={[-5, -2, -2]} intensity={1} color="#ff2a8d" />
 
         <GiftBox isOpen={isOpen} onClick={onBoxClick} />
 
-        <Balloon position={[-2.2, 0.8, -1]} color="#ff2a8d" speed={1.2} onClick={onBoxClick} />
-        <Balloon position={[2.2, 1.2, -1.2]} color="#9d4edd" speed={0.9} onClick={onBoxClick} />
-        <Balloon position={[-1.6, -0.4, 0.5]} color="#fbbf24" speed={1.4} onClick={onBoxClick} />
-        <Balloon position={[1.8, -0.6, 0.8]} color="#38bdf8" speed={1.1} onClick={onBoxClick} />
+        {/* Responsive balloon positions so balloons never clip on mobile */}
+        <Balloon position={isMobile ? [-1.3, 0.8, -1] : [-2.2, 0.8, -1]} color="#ff2a8d" speed={1.2} onClick={onBoxClick} />
+        <Balloon position={isMobile ? [1.3, 1.2, -1.2] : [2.2, 1.2, -1.2]} color="#9d4edd" speed={0.9} onClick={onBoxClick} />
+        <Balloon position={isMobile ? [-1.1, -0.4, 0.5] : [-1.6, -0.4, 0.5]} color="#fbbf24" speed={1.4} onClick={onBoxClick} />
+        <Balloon position={isMobile ? [1.1, -0.6, 0.8] : [1.8, -0.6, 0.8]} color="#38bdf8" speed={1.1} onClick={onBoxClick} />
       </Canvas>
     </div>
   );
