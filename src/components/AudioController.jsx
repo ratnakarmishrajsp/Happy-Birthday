@@ -26,16 +26,16 @@ export default function AudioController() {
 
   return (
     <>
-      <div style={{ position: 'fixed', top: '24px', right: '24px', zIndex: 9999, display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ position: 'fixed', top: '16px', right: '16px', zIndex: 99999, display: 'flex', alignItems: 'center', gap: '8px' }}>
         {/* Track Selector Button */}
         <button
           onClick={() => setShowMusicMenu(!showMusicMenu)}
           className="audio-toggle-btn"
-          style={{ background: 'rgba(157, 78, 221, 0.3)', borderColor: 'rgba(157, 78, 221, 0.6)' }}
+          style={{ background: 'rgba(157, 78, 221, 0.35)', borderColor: 'rgba(157, 78, 221, 0.7)', color: '#fff', display: 'flex', alignItems: 'center', gap: '4px' }}
           title="Select Background Music Track"
         >
-          <Music size={16} color="#fbbf24" />
-          <span className="hide-mobile">MUSIC 🎵</span>
+          <Music size={15} color="#fbbf24" />
+          <span style={{ fontSize: '0.8rem', fontWeight: 700 }}>MUSIC 🎵</span>
         </button>
 
         {/* Mute/Unmute Toggle Button */}
@@ -46,12 +46,12 @@ export default function AudioController() {
         >
           {isMuted ? (
             <>
-              <VolumeX size={18} color="#ef4444" />
+              <VolumeX size={16} color="#ef4444" />
               <span>MUTE 🔇</span>
             </>
           ) : (
             <>
-              <Volume2 size={18} color="#ff2a8d" />
+              <Volume2 size={16} color="#ff2a8d" />
               <span>SOUND ON</span>
             </>
           )}
@@ -68,24 +68,26 @@ export default function AudioController() {
             className="glass-panel-glow"
             style={{
               position: 'fixed',
-              top: '76px',
-              right: '24px',
-              zIndex: 99999,
-              width: '340px',
-              maxWidth: '90vw',
-              padding: '20px',
-              borderColor: 'rgba(255, 42, 141, 0.5)',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.8)'
+              top: '64px',
+              right: '16px',
+              zIndex: 999999,
+              width: '320px',
+              maxWidth: '92vw',
+              padding: '16px',
+              borderColor: 'rgba(255, 42, 141, 0.6)',
+              boxShadow: '0 10px 40px rgba(0,0,0,0.85)',
+              background: 'rgba(15, 10, 30, 0.95)',
+              backdropFilter: 'blur(16px)'
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: 800, color: '#ff758c' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 800, color: '#ff758c' }}>
                 <Sparkles size={16} color="#fbbf24" />
                 <span>CHOOSE BGM VIBE</span>
               </div>
               <button
                 onClick={() => setShowMusicMenu(false)}
-                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
               >
                 <X size={18} />
               </button>
@@ -97,10 +99,10 @@ export default function AudioController() {
                   key={track.id}
                   onClick={() => handleSelectTrack(track.id)}
                   style={{
-                    background: activeTrack === track.id ? 'rgba(255, 42, 141, 0.25)' : 'rgba(255, 255, 255, 0.05)',
-                    border: activeTrack === track.id ? '1px solid rgba(255, 42, 141, 0.6)' : '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '12px',
-                    padding: '10px 14px',
+                    background: activeTrack === track.id ? 'rgba(255, 42, 141, 0.3)' : 'rgba(255, 255, 255, 0.05)',
+                    border: activeTrack === track.id ? '1px solid rgba(255, 42, 141, 0.8)' : '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '10px',
+                    padding: '10px 12px',
                     textAlign: 'left',
                     color: '#fff',
                     cursor: 'pointer',
@@ -111,10 +113,10 @@ export default function AudioController() {
                   }}
                 >
                   <div>
-                    <div style={{ fontSize: '0.85rem', fontWeight: '700', color: activeTrack === track.id ? '#ff758c' : '#f8fafc' }}>
+                    <div style={{ fontSize: '0.82rem', fontWeight: '700', color: activeTrack === track.id ? '#ff758c' : '#f8fafc' }}>
                       {track.title}
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.7rem', color: '#94a3b8', marginTop: '2px' }}>
                       {track.style}
                     </div>
                   </div>
