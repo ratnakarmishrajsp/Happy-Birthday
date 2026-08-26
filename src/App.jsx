@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 import Background3D from './canvas/Background3D';
-import CosmicWarpOverlay from './canvas/CosmicWarpOverlay';
 import AudioController from './components/AudioController';
 
 import Section01_Loading from './components/Section01_Loading';
@@ -20,59 +18,55 @@ import Section12_GrandFinale from './components/Section12_GrandFinale';
 
 import { soundEngine } from './utils/soundEngine';
 
-const STAGES = [
-  { id: 'hero', title: 'The 3D Mystery Box 🎁', component: Section02_Hero },
-  { id: 'verification', title: 'Birthday Identity Check 🔐', component: Section03_Verification },
-  { id: 'brother-quiz', title: 'Level 01: Brother Quiz 🧠', component: Section04_BrotherQuiz },
-  { id: 'roast', title: 'The Anshika Roast Wall 🔥', component: Section05_RoastWall },
-  { id: 'tea', title: 'The Tea Incident ☕', component: Section06_TeaIncident },
-  { id: 'garden', title: 'The Garden Incident 🌸', component: Section07_GardenIncident },
-  { id: 'specs', title: 'Anshika Specs & Sister Manifesto 📊', component: Section07B_SisterStats },
-  { id: 'memory', title: 'Memory Constellation Universe 🌌', component: Section08_MemoryUniverse },
-  { id: 'sister-quiz', title: 'Level 02: Ultimate Sister Quiz 👑', component: Section09_SisterQuiz },
-  { id: 'secret-lock', title: '3D Secret Vault Lock 🔒', component: Section10_SecretLock },
-  { id: 'final-reveal', title: 'Final Heartfelt Letter 💌', component: Section11_FinalReveal },
-  { id: 'grand-finale', title: 'Grand Birthday Celebration 🎉', component: Section12_GrandFinale }
+const SECTIONS = [
+  { id: 'hero', label: '🎁 Gift Box' },
+  { id: 'verification', label: '🔐 Identity' },
+  { id: 'brother-quiz', label: '🧠 Quiz 1' },
+  { id: 'roast', label: '🔥 Roasts' },
+  { id: 'tea', label: '☕ Tea Story' },
+  { id: 'garden', label: '🌸 Garden' },
+  { id: 'sister-stats', label: '📊 Specs' },
+  { id: 'memory', label: '🌌 Memories' },
+  { id: 'sister-quiz', label: '👑 Quiz 2' },
+  { id: 'secret-lock', label: '🔒 Lock' },
+  { id: 'final-reveal', label: '💌 Letter' },
+  { id: 'grand-finale', label: '🎉 Finale' }
 ];
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [currentStageIndex, setCurrentStageIndex] = useState(0);
-  const [isWarping, setIsWarping] = useState(false);
-  const [nextStageTitle, setNextStageTitle] = useState('');
+  const [activeSectionId, setActiveSectionId] = useState('hero');
 
-  const warpToStage = (targetIndex) => {
-    if (targetIndex < 0 || targetIndex >= STAGES.length) return;
-
-    soundEngine.playSuccess();
-    setNextStageTitle(STAGES[targetIndex].title);
-    setIsWarping(true);
-
-    setTimeout(() => {
-      setCurrentStageIndex(targetIndex);
-    }, 800);
-
-    setTimeout(() => {
-      setIsWarping(false);
-      window.scrollTo({ top: 0, behavior: 'instant' });
-    }, 1800);
+  const scrollToSection = (id) => {
+    soundEngine.playClick();
+    const elem = document.getElementById(id);
+    if (elem) {
+      elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
-  const handleNextStage = () => {
-    warpToStage(currentStageIndex + 1);
-  };
+  useEffect(() => {
+    if (isLoading) return;
 
-  const handleReplay = () => {
-    warpToStage(0);
-  };
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + window.innerHeight / 3;
+      for (let i = SECTIONS.length - 1; i >= 0; i--) {
+        const elem = document.getElementById(SECTIONS[i].id);
+        if (elem && elem.offsetTop <= scrollPos) {
+          setActiveSectionId(SECTIONS[i].id);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isLoading]);
 
   return (
     <div style={{ position: 'relative', minHeight: '100vh', width: '100vw', overflowX: 'hidden' }}>
       {/* 3D Cosmic Ambient Background */}
       <Background3D />
-
-      {/* Cosmic Hyperspace 3D Warp Transition Overlay */}
-      <CosmicWarpOverlay isWarping={isWarping} nextStageTitle={nextStageTitle} />
 
       {/* Audio Controller Mute/Unmute & BGM Track Selector */}
       <AudioController />
@@ -81,31 +75,102 @@ export default function App() {
       {isLoading ? (
         <Section01_Loading onComplete={() => setIsLoading(false)} />
       ) : (
-        <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh' }}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStageIndex}
-              initial={{ opacity: 0, scale: 0.85, filter: 'blur(10px)' }}
-              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, scale: 1.25, filter: 'blur(15px)' }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              style={{ width: '100%', minHeight: '100vh' }}
-            >
-              {currentStageIndex === 0 && <Section02_Hero onStartSurprise={handleNextStage} />}
-              {currentStageIndex === 1 && <Section03_Verification onVerified={handleNextStage} />}
-              {currentStageIndex === 2 && <Section04_BrotherQuiz onQuizComplete={handleNextStage} />}
-              {currentStageIndex === 3 && <Section05_RoastWall onNextSection={handleNextStage} />}
-              {currentStageIndex === 4 && <Section06_TeaIncident onNextSection={handleNextStage} />}
-              {currentStageIndex === 5 && <Section07_GardenIncident onNextSection={handleNextStage} />}
-              {currentStageIndex === 6 && <Section07B_SisterStats onNextSection={handleNextStage} />}
-              {currentStageIndex === 7 && <Section08_MemoryUniverse onNextSection={handleNextStage} />}
-              {currentStageIndex === 8 && <Section09_SisterQuiz onQuizComplete={handleNextStage} />}
-              {currentStageIndex === 9 && <Section10_SecretLock onUnlockFinal={handleNextStage} />}
-              {currentStageIndex === 10 && <Section11_FinalReveal onProceedToFinale={handleNextStage} />}
-              {currentStageIndex === 11 && <Section12_GrandFinale onReplay={handleReplay} />}
-            </motion.div>
-          </AnimatePresence>
-        </main>
+        <>
+          {/* Apple-Style Sticky Quick Scrubber Pills */}
+          <nav
+            style={{
+              position: 'fixed',
+              bottom: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 9999,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 14px',
+              borderRadius: '30px',
+              background: 'rgba(15, 10, 30, 0.75)',
+              backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+              maxWidth: '92vw',
+              overflowX: 'auto'
+            }}
+          >
+            {SECTIONS.map((sec) => (
+              <button
+                key={sec.id}
+                onClick={() => scrollToSection(sec.id)}
+                style={{
+                  background: activeSectionId === sec.id ? 'rgba(255, 42, 141, 0.8)' : 'rgba(255, 255, 255, 0.08)',
+                  color: activeSectionId === sec.id ? '#ffffff' : '#94a3b8',
+                  border: 'none',
+                  borderRadius: '20px',
+                  padding: '5px 11px',
+                  fontSize: '0.72rem',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  transition: 'all 0.25s ease'
+                }}
+              >
+                {sec.label}
+              </button>
+            ))}
+          </nav>
+
+          {/* Main Continuous Scroll Content */}
+          <main style={{ position: 'relative', zIndex: 1, width: '100%' }}>
+            <div id="hero">
+              <Section02_Hero onStartSurprise={() => scrollToSection('verification')} />
+            </div>
+
+            <div id="verification">
+              <Section03_Verification onVerified={() => scrollToSection('brother-quiz')} />
+            </div>
+
+            <div id="brother-quiz">
+              <Section04_BrotherQuiz onQuizComplete={() => scrollToSection('roast')} />
+            </div>
+
+            <div id="roast">
+              <Section05_RoastWall onNextSection={() => scrollToSection('tea')} />
+            </div>
+
+            <div id="tea">
+              <Section06_TeaIncident onNextSection={() => scrollToSection('garden')} />
+            </div>
+
+            <div id="garden">
+              <Section07_GardenIncident onNextSection={() => scrollToSection('sister-stats')} />
+            </div>
+
+            {/* Apple Spec-Sheet & Sister Manifesto Section */}
+            <div id="sister-stats">
+              <Section07B_SisterStats onNextSection={() => scrollToSection('memory')} />
+            </div>
+
+            <div id="memory">
+              <Section08_MemoryUniverse onNextSection={() => scrollToSection('sister-quiz')} />
+            </div>
+
+            <div id="sister-quiz">
+              <Section09_SisterQuiz onQuizComplete={() => scrollToSection('secret-lock')} />
+            </div>
+
+            <div id="secret-lock">
+              <Section10_SecretLock onUnlockFinal={() => scrollToSection('final-reveal')} />
+            </div>
+
+            <div id="final-reveal">
+              <Section11_FinalReveal onProceedToFinale={() => scrollToSection('grand-finale')} />
+            </div>
+
+            <div id="grand-finale">
+              <Section12_GrandFinale onReplay={() => scrollToSection('hero')} />
+            </div>
+          </main>
+        </>
       )}
     </div>
   );
