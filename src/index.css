@@ -232,8 +232,10 @@ body {
   animation: camera-shake 0.6s ease-in-out;
 }
 
-/* Responsive fixes */
 @media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
   .glow-button {
     padding: 14px 28px;
     font-size: 0.9rem;
@@ -244,9 +246,5 @@ body {
     padding: 8px 14px;
     font-size: 0.75rem;
   }
-  .scroll-down-btn {
-    bottom: 16px;
-    font-size: 0.75rem;
-    padding: 6px 14px;
-  }
 }
+
