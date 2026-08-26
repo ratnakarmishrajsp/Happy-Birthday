@@ -90,9 +90,10 @@ export default function Section02_Hero({ onStartSurprise }) {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 0.5 }}
-        style={{ width: '100%', maxWidth: '550px' }}
+        style={{ width: '100%', maxWidth: '550px', cursor: 'pointer' }}
+        onClick={handleClick}
       >
-        <GiftBox3D isOpen={isOpen} />
+        <GiftBox3D isOpen={isOpen} onBoxClick={handleClick} />
       </motion.div>
 
       <motion.div

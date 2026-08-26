@@ -5,7 +5,7 @@ import { soundEngine } from '../utils/soundEngine';
 
 export default function Section06_TeaIncident({ onNextSection }) {
   const [timerText, setTimerText] = useState('00:01');
-  const [step, setStep] = useState(0);
+  const [cupScale, setCupScale] = useState(1);
 
   useEffect(() => {
     const times = ['00:01', '00:15', '00:30', '00:45', '01:00'];
@@ -19,6 +19,12 @@ export default function Section06_TeaIncident({ onNextSection }) {
 
     return () => clearInterval(interval);
   }, []);
+
+  const handleCupClick = () => {
+    soundEngine.playPop();
+    setCupScale(1.25);
+    setTimeout(() => setCupScale(1), 300);
+  };
 
   return (
     <section
@@ -71,8 +77,11 @@ export default function Section06_TeaIncident({ onNextSection }) {
           One cup. One hour. One unforgettable memory.
         </p>
 
-        {/* Animated Clock Display */}
-        <div
+        {/* Animated Clickable Clock Display */}
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleCupClick}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -82,20 +91,24 @@ export default function Section06_TeaIncident({ onNextSection }) {
             border: '1px solid rgba(251, 191, 36, 0.4)',
             borderRadius: '50px',
             marginBottom: '36px',
-            boxShadow: '0 0 20px rgba(251, 191, 36, 0.2)'
+            boxShadow: '0 0 20px rgba(251, 191, 36, 0.2)',
+            cursor: 'pointer'
           }}
         >
           <Clock size={28} color="#fbbf24" className="animate-spin-slow" />
           <span style={{ fontFamily: 'monospace', fontSize: '2.2rem', fontWeight: '900', color: '#fbbf24', letterSpacing: '2px' }}>
             {timerText}
           </span>
-        </div>
+        </motion.div>
 
-        {/* Animated Tea Cup */}
-        <div style={{ position: 'relative', width: '120px', height: '120px', margin: '0 auto 32px auto' }}>
-          <motion.div
-            animate={{ scale: [1, 1.08, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
+        {/* Animated Clickable Tea Cup */}
+        <motion.div
+          animate={{ scale: cupScale }}
+          transition={{ type: 'spring', stiffness: 300 }}
+          onClick={handleCupClick}
+          style={{ position: 'relative', width: '120px', height: '120px', margin: '0 auto 32px auto', cursor: 'pointer' }}
+        >
+          <div
             style={{
               width: '100%',
               height: '100%',
@@ -107,8 +120,8 @@ export default function Section06_TeaIncident({ onNextSection }) {
             }}
           >
             <Coffee size={56} color="#ff2a8d" />
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
 
         {/* Story Sequence Text */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '36px' }}>
@@ -124,11 +137,13 @@ export default function Section06_TeaIncident({ onNextSection }) {
             initial={{ scale: 0.8, opacity: 0 }}
             whileInView={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.4 }}
+            onClick={handleCupClick}
             style={{
               padding: '16px',
               borderRadius: '16px',
               background: 'rgba(244, 63, 94, 0.15)',
-              border: '1px solid rgba(244, 63, 94, 0.4)'
+              border: '1px solid rgba(244, 63, 94, 0.4)',
+              cursor: 'pointer'
             }}
           >
             <h3 style={{ fontSize: '1.8rem', color: '#fb7185', fontWeight: '900', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>

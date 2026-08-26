@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-function HeartLock({ isUnlocked }) {
+function HeartLock({ isUnlocked, onClick }) {
   const lockRef = useRef();
   const shackleRef = useRef();
 
@@ -23,7 +23,16 @@ function HeartLock({ isUnlocked }) {
   });
 
   return (
-    <group ref={lockRef} position={[0, -0.3, 0]}>
+    <group
+      ref={lockRef}
+      position={[0, -0.3, 0]}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (onClick) onClick();
+      }}
+      onPointerOver={() => (document.body.style.cursor = 'pointer')}
+      onPointerOut={() => (document.body.style.cursor = 'auto')}
+    >
       {/* Lock Shackle */}
       <group ref={shackleRef} position={[0, 0.45, 0]}>
         <mesh position={[0, 0, 0]}>
@@ -57,15 +66,15 @@ function HeartLock({ isUnlocked }) {
   );
 }
 
-export default function VaultLock3D({ isUnlocked }) {
+export default function VaultLock3D({ isUnlocked, onLockClick }) {
   return (
-    <div style={{ width: '100%', height: '300px', position: 'relative' }}>
+    <div style={{ width: '100%', height: '300px', position: 'relative', cursor: 'pointer' }}>
       <Canvas camera={{ position: [0, 0.5, 3.8], fov: 45 }}>
         <ambientLight intensity={0.6} />
         <pointLight position={[5, 5, 5]} intensity={2} color="#fbbf24" />
         <pointLight position={[-5, -5, -2]} intensity={1} color="#ff2a8d" />
 
-        <HeartLock isUnlocked={isUnlocked} />
+        <HeartLock isUnlocked={isUnlocked} onClick={onLockClick} />
       </Canvas>
     </div>
   );

@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-function GiftBox({ isOpen }) {
+function GiftBox({ isOpen, onClick }) {
   const boxRef = useRef();
   const lidRef = useRef();
   const lightRef = useRef();
@@ -28,7 +28,16 @@ function GiftBox({ isOpen }) {
   });
 
   return (
-    <group ref={boxRef} position={[0, -0.5, 0]}>
+    <group
+      ref={boxRef}
+      position={[0, -0.5, 0]}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (onClick) onClick();
+      }}
+      onPointerOver={() => (document.body.style.cursor = 'pointer')}
+      onPointerOut={() => (document.body.style.cursor = 'auto')}
+    >
       {/* Internal Beam Light */}
       <pointLight ref={lightRef} position={[0, 0.5, 0]} intensity={0} color="#fbbf24" distance={8} />
 
@@ -87,7 +96,7 @@ function GiftBox({ isOpen }) {
   );
 }
 
-function Balloon({ position, color, speed = 1 }) {
+function Balloon({ position, color, speed = 1, onClick }) {
   const meshRef = useRef();
 
   useFrame((state) => {
@@ -98,7 +107,16 @@ function Balloon({ position, color, speed = 1 }) {
   });
 
   return (
-    <group ref={meshRef} position={position}>
+    <group
+      ref={meshRef}
+      position={position}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (onClick) onClick();
+      }}
+      onPointerOver={() => (document.body.style.cursor = 'pointer')}
+      onPointerOut={() => (document.body.style.cursor = 'auto')}
+    >
       <mesh>
         <sphereGeometry args={[0.55, 32, 32]} />
         <meshStandardMaterial color={color} roughness={0.1} metalness={0.5} />
@@ -112,20 +130,20 @@ function Balloon({ position, color, speed = 1 }) {
   );
 }
 
-export default function GiftBox3D({ isOpen }) {
+export default function GiftBox3D({ isOpen, onBoxClick }) {
   return (
-    <div style={{ width: '100%', height: '380px', position: 'relative' }}>
+    <div style={{ width: '100%', height: '380px', position: 'relative', cursor: 'pointer' }}>
       <Canvas camera={{ position: [0, 1.5, 4.2], fov: 45 }}>
         <ambientLight intensity={0.7} />
         <pointLight position={[5, 6, 5]} intensity={2} color="#ffffff" />
         <pointLight position={[-5, -2, -2]} intensity={1} color="#ff2a8d" />
 
-        <GiftBox isOpen={isOpen} />
+        <GiftBox isOpen={isOpen} onClick={onBoxClick} />
 
-        <Balloon position={[-2.2, 0.8, -1]} color="#ff2a8d" speed={1.2} />
-        <Balloon position={[2.2, 1.2, -1.2]} color="#9d4edd" speed={0.9} />
-        <Balloon position={[-1.6, -0.4, 0.5]} color="#fbbf24" speed={1.4} />
-        <Balloon position={[1.8, -0.6, 0.8]} color="#38bdf8" speed={1.1} />
+        <Balloon position={[-2.2, 0.8, -1]} color="#ff2a8d" speed={1.2} onClick={onBoxClick} />
+        <Balloon position={[2.2, 1.2, -1.2]} color="#9d4edd" speed={0.9} onClick={onBoxClick} />
+        <Balloon position={[-1.6, -0.4, 0.5]} color="#fbbf24" speed={1.4} onClick={onBoxClick} />
+        <Balloon position={[1.8, -0.6, 0.8]} color="#38bdf8" speed={1.1} onClick={onBoxClick} />
       </Canvas>
     </div>
   );

@@ -79,6 +79,7 @@ export default function Section07_GardenIncident({ onNextSection }) {
 
         {/* Story Box */}
         <div
+          onClick={handleNextStep}
           style={{
             minHeight: '180px',
             display: 'flex',
@@ -89,7 +90,8 @@ export default function Section07_GardenIncident({ onNextSection }) {
             borderRadius: '20px',
             background: 'rgba(15, 12, 35, 0.7)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
-            marginBottom: '32px'
+            marginBottom: '32px',
+            cursor: step < storySteps.length - 1 ? 'pointer' : 'default'
           }}
         >
           <AnimatePresence mode="wait">

@@ -71,8 +71,11 @@ export default function Section10_SecretLock({ onUnlockFinal }) {
         </p>
 
         {/* 3D Heart Lock */}
-        <div style={{ width: '100%', maxWidth: '400px', margin: '0 auto' }}>
-          <VaultLock3D isUnlocked={isUnlocked} />
+        <div
+          style={{ width: '100%', maxWidth: '400px', margin: '0 auto', cursor: 'pointer' }}
+          onClick={handleUnlock}
+        >
+          <VaultLock3D isUnlocked={isUnlocked} onLockClick={handleUnlock} />
         </div>
 
         <div style={{ marginTop: '20px' }}>
