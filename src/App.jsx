@@ -13,6 +13,22 @@ import Section09_SisterQuiz from './components/Section09_SisterQuiz';
 import Section10_SecretLock from './components/Section10_SecretLock';
 import Section11_FinalReveal from './components/Section11_FinalReveal';
 import Section12_GrandFinale from './components/Section12_GrandFinale';
+import { ChevronDown } from 'lucide-react';
+import { soundEngine } from './utils/soundEngine';
+
+const sectionIds = [
+  'hero-section',
+  'verification-section',
+  'quiz-section',
+  'roast-section',
+  'tea-section',
+  'garden-section',
+  'memory-section',
+  'sister-quiz-section',
+  'lock-section',
+  'final-letter-section',
+  'finale-section'
+];
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -24,17 +40,43 @@ export default function App() {
     }
   };
 
+  const handleScrollNext = () => {
+    soundEngine.playClick();
+    const scrollPos = window.scrollY || window.pageYOffset;
+    let nextId = sectionIds[0];
+
+    for (let i = 0; i < sectionIds.length; i++) {
+      const el = document.getElementById(sectionIds[i]);
+      if (el) {
+        const top = el.offsetTop - 100;
+        if (scrollPos < top) {
+          nextId = sectionIds[i];
+          break;
+        }
+      }
+    }
+    scrollTo(nextId);
+  };
+
   const handleReplay = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', width: '100%' }}>
+    <div style={{ position: 'relative', minHeight: '100vh', width: '100%', overflowX: 'hidden' }}>
       {/* 3D Cosmic Ambient Background Canvas */}
       <Background3D />
 
       {/* Audio Controller Mute/Unmute Persistent Button */}
       <AudioController />
+
+      {/* Floating Scroll Down Indicator Button */}
+      {!isLoading && (
+        <button onClick={handleScrollNext} className="scroll-down-btn" title="Scroll to Next Section">
+          <span>SCROLL</span>
+          <ChevronDown size={18} />
+        </button>
+      )}
 
       {/* Section 01: Loading Screen */}
       {isLoading ? (
