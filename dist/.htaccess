@@ -7,14 +7,18 @@
   RewriteRule . /index.html [L]
 </IfModule>
 
+# Force No-Cache on HTML files so Hostinger CDN & browsers always fetch latest code
+<FilesMatch "\.(html|htm)$">
+  FileETag None
+  <IfModule mod_headers.c>
+    Header unset ETag
+    Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+  </IfModule>
+</FilesMatch>
+
 # Enable GZIP Compression
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
-</IfModule>
-
-# Caching Headers
-<IfModule mod_expires.c>
-  ExpiresActive On
-  ExpiresDefault "access plus 1 month"
-  ExpiresByType text/html "access plus 0 seconds"
 </IfModule>
