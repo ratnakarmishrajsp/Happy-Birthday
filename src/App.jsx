@@ -11,6 +11,7 @@ import Section04_BrotherQuiz from './components/Section04_BrotherQuiz';
 import Section05_RoastWall from './components/Section05_RoastWall';
 import Section06_TeaIncident from './components/Section06_TeaIncident';
 import Section07_GardenIncident from './components/Section07_GardenIncident';
+import Section07B_SisterStats from './components/Section07B_SisterStats';
 import Section08_MemoryUniverse from './components/Section08_MemoryUniverse';
 import Section09_SisterQuiz from './components/Section09_SisterQuiz';
 import Section10_SecretLock from './components/Section10_SecretLock';
@@ -26,6 +27,7 @@ const STAGES = [
   { id: 'roast', title: 'The Anshika Roast Wall 🔥', component: Section05_RoastWall },
   { id: 'tea', title: 'The Tea Incident ☕', component: Section06_TeaIncident },
   { id: 'garden', title: 'The Garden Incident 🌸', component: Section07_GardenIncident },
+  { id: 'specs', title: 'Anshika Specs & Sister Manifesto 📊', component: Section07B_SisterStats },
   { id: 'memory', title: 'Memory Constellation Universe 🌌', component: Section08_MemoryUniverse },
   { id: 'sister-quiz', title: 'Level 02: Ultimate Sister Quiz 👑', component: Section09_SisterQuiz },
   { id: 'secret-lock', title: '3D Secret Vault Lock 🔒', component: Section10_SecretLock },
@@ -72,7 +74,7 @@ export default function App() {
       {/* Cosmic Hyperspace 3D Warp Transition Overlay */}
       <CosmicWarpOverlay isWarping={isWarping} nextStageTitle={nextStageTitle} />
 
-      {/* Audio Controller Mute/Unmute Button */}
+      {/* Audio Controller Mute/Unmute & BGM Track Selector */}
       <AudioController />
 
       {/* Section 01: Loading Screen */}
@@ -95,11 +97,12 @@ export default function App() {
               {currentStageIndex === 3 && <Section05_RoastWall onNextSection={handleNextStage} />}
               {currentStageIndex === 4 && <Section06_TeaIncident onNextSection={handleNextStage} />}
               {currentStageIndex === 5 && <Section07_GardenIncident onNextSection={handleNextStage} />}
-              {currentStageIndex === 6 && <Section08_MemoryUniverse onNextSection={handleNextStage} />}
-              {currentStageIndex === 7 && <Section09_SisterQuiz onQuizComplete={handleNextStage} />}
-              {currentStageIndex === 8 && <Section10_SecretLock onUnlockFinal={handleNextStage} />}
-              {currentStageIndex === 9 && <Section11_FinalReveal onProceedToFinale={handleNextStage} />}
-              {currentStageIndex === 10 && <Section12_GrandFinale onReplay={handleReplay} />}
+              {currentStageIndex === 6 && <Section07B_SisterStats onNextSection={handleNextStage} />}
+              {currentStageIndex === 7 && <Section08_MemoryUniverse onNextSection={handleNextStage} />}
+              {currentStageIndex === 8 && <Section09_SisterQuiz onQuizComplete={handleNextStage} />}
+              {currentStageIndex === 9 && <Section10_SecretLock onUnlockFinal={handleNextStage} />}
+              {currentStageIndex === 10 && <Section11_FinalReveal onProceedToFinale={handleNextStage} />}
+              {currentStageIndex === 11 && <Section12_GrandFinale onReplay={handleReplay} />}
             </motion.div>
           </AnimatePresence>
         </main>
