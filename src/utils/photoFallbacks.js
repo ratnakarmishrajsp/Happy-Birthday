@@ -26,66 +26,82 @@ export const getPlaceholderPhoto = (id, title, color1 = '#ff2a8d', color2 = '#9d
 export const memoryPhotos = [
   {
     id: 1,
-    title: "Sibling Shenanigans",
-    path: "/assets/photos/memory-01.jpg",
-    fallback: getPlaceholderPhoto(1, "Sibling Shenanigans", "#ff2a8d", "#9d4edd"),
-    caption: "That one time we laughed until our stomachs hurt over the most stupid joke! 😂",
-    year: "Childhood Days"
+    title: "Twilight Balcony & Serene Chill 🌆",
+    path: "/assets/photos/IMG_20260406_140953.jpg",
+    fallback: getPlaceholderPhoto(1, "Twilight Balcony", "#ff2a8d", "#9d4edd"),
+    caption: "Hand resting on her neck, evening sky in the background, and neckband earphones locked in — Didi in her serene yet cute default pose! Evening walks with Didi solve all life problems.",
+    year: "Evening Memories",
+    rotate: 0,
+    aspectRatio: "16/9"
   },
   {
     id: 2,
-    title: "The Reel Partner",
-    path: "/assets/photos/memory-02.jpg",
-    fallback: getPlaceholderPhoto(2, "The Reel Partner", "#ec4899", "#8b5cf6"),
-    caption: "Always scrolling Reels, always making me watch 50 clips in a row! 📱✨",
-    year: "Daily Life"
+    title: "7D Arcade Squad & Thumbs Up! 🎮👍",
+    path: "/assets/photos/IMG_20260406_141028.jpg",
+    fallback: getPlaceholderPhoto(2, "7D Arcade Squad", "#ec4899", "#8b5cf6"),
+    caption: "Right before the 7D motion ride started! Didi trying to stay calm while the seats start shaking, and the squad hyping up with a big thumbs up!",
+    year: "Arcade Outing",
+    rotate: 0,
+    aspectRatio: "3/4"
   },
   {
     id: 3,
-    title: "Random Arguments",
-    path: "/assets/photos/memory-03.jpg",
-    fallback: getPlaceholderPhoto(3, "Random Arguments", "#f43f5e", "#fbbf24"),
-    caption: "Fighting over the TV remote & AC temperature like it's a world war. ⚔️",
-    year: "Unbreakable Bond"
+    title: "T-Rex Dino Survival & Boss Pose 🦖😎",
+    path: "/assets/photos/IMG_20260406_141228.jpg",
+    fallback: getPlaceholderPhoto(3, "T-Rex Dino Park", "#f43f5e", "#fbbf24"),
+    caption: "A giant roaring T-Rex right behind us, and what do we do? Put on cool sunglasses and sit like total bosses! With Didi around, even Jurassic Park feels like a chill picnic.",
+    year: "Dino Park Adventure",
+    rotate: 0,
+    aspectRatio: "16/9"
   },
   {
     id: 4,
-    title: "Tea Master Didi",
-    path: "/assets/photos/memory-04.jpg",
-    fallback: getPlaceholderPhoto(4, "Tea Master Didi", "#10b981", "#3b82f6"),
-    caption: "The legendary 1-hour tea session that will go down in family history! ☕",
-    year: "Legendary Moment"
+    title: "Auto Ride Goofiness & Comedy 🛺😜",
+    path: "/assets/photos/Snapchat-1309424231.jpg",
+    fallback: getPlaceholderPhoto(4, "Auto Ride Comedy", "#38bdf8", "#a855f7"),
+    caption: "Me making goofy funny faces while Didi tries her best to look aesthetic! Every auto ride with Didi turns into a comedy show filled with laughter and endless gossip.",
+    year: "Daily Rides",
+    rotate: 90,
+    aspectRatio: "3/4"
   },
   {
     id: 5,
-    title: "Festival Magic",
-    path: "/assets/photos/memory-05.jpg",
-    fallback: getPlaceholderPhoto(5, "Festival Magic", "#a855f7", "#6366f1"),
-    caption: "Dressed up for celebrations, pretending to be civilized for 5 minutes. 🌟",
-    year: "Festive Vibes"
+    title: "Foodie Madness 'In The Punjab' 🍕✌️",
+    path: "/assets/photos/Snapchat-2067139904.jpg",
+    fallback: getPlaceholderPhoto(5, "In The Punjab Cafe", "#10b981", "#3b82f6"),
+    caption: "Double peace sign ✌️, tongue out, and ready to devour all the food! Didi's official rule at any cafe: First take silly & cute photos, then eat everything in sight!",
+    year: "Cafe Hangouts",
+    rotate: 0,
+    aspectRatio: "9/16"
   },
   {
     id: 6,
-    title: "Best Friends Forever",
-    path: "/assets/photos/memory-06.jpg",
-    fallback: getPlaceholderPhoto(6, "Best Friends Forever", "#f59e0b", "#ef4444"),
-    caption: "No matter how much we annoy each other, you'll always be my favorite human. ❤️",
-    year: "Always & Forever"
+    title: "Home Face Mask Spa Day 💆‍♀️✨",
+    path: "/assets/photos/Snapchat-275239515.jpg",
+    fallback: getPlaceholderPhoto(6, "Face Mask Spa Day", "#a855f7", "#6366f1"),
+    caption: "Face mask cream on, heart pom-pom headband locked in! Who needs an expensive parlor when you can do a chaotic home spa day with Didi and laugh till your mask cracks?",
+    year: "Home Fun",
+    rotate: 90,
+    aspectRatio: "3/4"
   },
   {
     id: 7,
-    title: "Anshika Didi Special",
-    path: "/assets/photos/anshika-01.jpg",
-    fallback: getPlaceholderPhoto(7, "Anshika Didi Special", "#ff2a8d", "#f43f5e"),
-    caption: "Captured in her element — pure laughter and good energy! ✨",
-    year: "Memories"
+    title: "Baby Dino Hatching Moment 🥚🦖",
+    path: "/assets/photos/Snapchat-436339798.jpg",
+    fallback: getPlaceholderPhoto(7, "Baby Dino Hatching", "#ff2a8d", "#f43f5e"),
+    caption: "The cutest dinosaur to ever hatch! Didi posing inside a giant cracked egg shell looking like the main character of a cute animated movie.",
+    year: "Cute Moments",
+    rotate: 0,
+    aspectRatio: "9/16"
   },
   {
     id: 8,
-    title: "Brother-Sister Moments",
-    path: "/assets/photos/anshika-02.jpg",
-    fallback: getPlaceholderPhoto(8, "Brother-Sister Moments", "#38bdf8", "#9d4edd"),
-    caption: "Partners in chaos since day one! 🚀❤️",
-    year: "Together"
+    title: "Desi Function Swag & 4-Grid Drama 💃✨",
+    path: "/assets/photos/Snapchat-568120777.jpg",
+    fallback: getPlaceholderPhoto(8, "Desi Function Swag", "#f59e0b", "#ef4444"),
+    caption: "Dressed up in traditional ethnic wear with jhumkas on for the family function, but remaining 100% dramatic & playful in front of the camera! Sibling bond forever. ❤️",
+    year: "Family Celebrations",
+    rotate: 0,
+    aspectRatio: "9/16"
   }
 ];
