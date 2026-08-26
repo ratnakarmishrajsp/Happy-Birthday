@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Lock, Sparkles, Unlock } from 'lucide-react';
 import Background3D from './canvas/Background3D';
 import AudioController from './components/AudioController';
 
@@ -46,9 +46,10 @@ export default function App() {
     setTimeout(() => {
       const elem = document.getElementById(SECTIONS[targetIndex].id);
       if (elem) {
-        elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const topPos = elem.getBoundingClientRect().top + window.pageYOffset - 10;
+        window.scrollTo({ top: topPos, behavior: 'smooth' });
       }
-    }, 300);
+    }, 150);
   };
 
   const scrollToSection = (id, idx) => {
@@ -59,7 +60,8 @@ export default function App() {
     soundEngine.playClick();
     const elem = document.getElementById(id);
     if (elem) {
-      elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const topPos = elem.getBoundingClientRect().top + window.pageYOffset - 10;
+      window.scrollTo({ top: topPos, behavior: 'smooth' });
     }
   };
 
@@ -160,57 +162,57 @@ export default function App() {
             </div>
 
             {/* Step 1: Verification */}
-            <SectionWrapper idx={1} unlockedMaxIndex={unlockedMaxIndex} id="verification" title={SECTIONS[1].title}>
+            <SectionWrapper idx={1} unlockedMaxIndex={unlockedMaxIndex} id="verification" title={SECTIONS[1].title} onUnlockClick={() => unlockAndScrollTo(1)}>
               <Section03_Verification onVerified={() => unlockAndScrollTo(2)} />
             </SectionWrapper>
 
             {/* Step 2: Brother Quiz */}
-            <SectionWrapper idx={2} unlockedMaxIndex={unlockedMaxIndex} id="brother-quiz" title={SECTIONS[2].title}>
+            <SectionWrapper idx={2} unlockedMaxIndex={unlockedMaxIndex} id="brother-quiz" title={SECTIONS[2].title} onUnlockClick={() => unlockAndScrollTo(2)}>
               <Section04_BrotherQuiz onQuizComplete={() => unlockAndScrollTo(3)} />
             </SectionWrapper>
 
             {/* Step 3: Roast Wall */}
-            <SectionWrapper idx={3} unlockedMaxIndex={unlockedMaxIndex} id="roast" title={SECTIONS[3].title}>
+            <SectionWrapper idx={3} unlockedMaxIndex={unlockedMaxIndex} id="roast" title={SECTIONS[3].title} onUnlockClick={() => unlockAndScrollTo(3)}>
               <Section05_RoastWall onNextSection={() => unlockAndScrollTo(4)} />
             </SectionWrapper>
 
             {/* Step 4: Tea Incident */}
-            <SectionWrapper idx={4} unlockedMaxIndex={unlockedMaxIndex} id="tea" title={SECTIONS[4].title}>
+            <SectionWrapper idx={4} unlockedMaxIndex={unlockedMaxIndex} id="tea" title={SECTIONS[4].title} onUnlockClick={() => unlockAndScrollTo(4)}>
               <Section06_TeaIncident onNextSection={() => unlockAndScrollTo(5)} />
             </SectionWrapper>
 
             {/* Step 5: Garden Incident */}
-            <SectionWrapper idx={5} unlockedMaxIndex={unlockedMaxIndex} id="garden" title={SECTIONS[5].title}>
+            <SectionWrapper idx={5} unlockedMaxIndex={unlockedMaxIndex} id="garden" title={SECTIONS[5].title} onUnlockClick={() => unlockAndScrollTo(5)}>
               <Section07_GardenIncident onNextSection={() => unlockAndScrollTo(6)} />
             </SectionWrapper>
 
             {/* Step 6: Sister Specs Manifesto */}
-            <SectionWrapper idx={6} unlockedMaxIndex={unlockedMaxIndex} id="sister-stats" title={SECTIONS[6].title}>
+            <SectionWrapper idx={6} unlockedMaxIndex={unlockedMaxIndex} id="sister-stats" title={SECTIONS[6].title} onUnlockClick={() => unlockAndScrollTo(6)}>
               <Section07B_SisterStats onNextSection={() => unlockAndScrollTo(7)} />
             </SectionWrapper>
 
             {/* Step 7: Memory Universe */}
-            <SectionWrapper idx={7} unlockedMaxIndex={unlockedMaxIndex} id="memory" title={SECTIONS[7].title}>
+            <SectionWrapper idx={7} unlockedMaxIndex={unlockedMaxIndex} id="memory" title={SECTIONS[7].title} onUnlockClick={() => unlockAndScrollTo(7)}>
               <Section08_MemoryUniverse onNextSection={() => unlockAndScrollTo(8)} />
             </SectionWrapper>
 
             {/* Step 8: Sister Quiz */}
-            <SectionWrapper idx={8} unlockedMaxIndex={unlockedMaxIndex} id="sister-quiz" title={SECTIONS[8].title}>
+            <SectionWrapper idx={8} unlockedMaxIndex={unlockedMaxIndex} id="sister-quiz" title={SECTIONS[8].title} onUnlockClick={() => unlockAndScrollTo(8)}>
               <Section09_SisterQuiz onQuizComplete={() => unlockAndScrollTo(9)} />
             </SectionWrapper>
 
             {/* Step 9: Secret Lock */}
-            <SectionWrapper idx={9} unlockedMaxIndex={unlockedMaxIndex} id="secret-lock" title={SECTIONS[9].title}>
+            <SectionWrapper idx={9} unlockedMaxIndex={unlockedMaxIndex} id="secret-lock" title={SECTIONS[9].title} onUnlockClick={() => unlockAndScrollTo(9)}>
               <Section10_SecretLock onUnlockFinal={() => unlockAndScrollTo(10)} />
             </SectionWrapper>
 
             {/* Step 10: Final Reveal */}
-            <SectionWrapper idx={10} unlockedMaxIndex={unlockedMaxIndex} id="final-reveal" title={SECTIONS[10].title}>
+            <SectionWrapper idx={10} unlockedMaxIndex={unlockedMaxIndex} id="final-reveal" title={SECTIONS[10].title} onUnlockClick={() => unlockAndScrollTo(10)}>
               <Section11_FinalReveal onProceedToFinale={() => unlockAndScrollTo(11)} />
             </SectionWrapper>
 
             {/* Step 11: Grand Finale */}
-            <SectionWrapper idx={11} unlockedMaxIndex={unlockedMaxIndex} id="grand-finale" title={SECTIONS[11].title}>
+            <SectionWrapper idx={11} unlockedMaxIndex={unlockedMaxIndex} id="grand-finale" title={SECTIONS[11].title} onUnlockClick={() => unlockAndScrollTo(11)}>
               <Section12_GrandFinale onReplay={() => unlockAndScrollTo(0)} />
             </SectionWrapper>
 
@@ -221,8 +223,8 @@ export default function App() {
   );
 }
 
-// Wrapper for Step-by-Step Progressive Blur & Lock System
-function SectionWrapper({ children, idx, unlockedMaxIndex, id, title }) {
+// Wrapper for Step-by-Step Progressive Subtle Blur & Lock System
+function SectionWrapper({ children, idx, unlockedMaxIndex, id, title, onUnlockClick }) {
   const isUnlocked = idx <= unlockedMaxIndex;
 
   return (
@@ -232,16 +234,16 @@ function SectionWrapper({ children, idx, unlockedMaxIndex, id, title }) {
         position: 'relative',
         minHeight: '100vh',
         width: '100%',
-        filter: isUnlocked ? 'none' : 'blur(16px)',
-        opacity: isUnlocked ? 1 : 0.35,
+        filter: isUnlocked ? 'none' : 'blur(5px)',
+        opacity: isUnlocked ? 1 : 0.6,
         pointerEvents: isUnlocked ? 'auto' : 'none',
-        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+        transition: 'all 0.6s ease',
         userSelect: isUnlocked ? 'auto' : 'none'
       }}
     >
       {children}
 
-      {/* Locked Overlay Badge */}
+      {/* Subtle Locked Overlay Badge */}
       {!isUnlocked && (
         <div
           style={{
@@ -252,8 +254,8 @@ function SectionWrapper({ children, idx, unlockedMaxIndex, id, title }) {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'rgba(5, 5, 12, 0.55)',
-            backdropFilter: 'blur(10px)',
+            background: 'rgba(5, 5, 12, 0.45)',
+            backdropFilter: 'blur(3px)',
             pointerEvents: 'auto',
             padding: '20px'
           }}
@@ -261,27 +263,44 @@ function SectionWrapper({ children, idx, unlockedMaxIndex, id, title }) {
           <div
             className="glass-panel-glow"
             style={{
-              padding: '24px 32px',
+              padding: '20px 28px',
               borderRadius: '24px',
               textAlign: 'center',
               border: '1px solid rgba(255, 42, 141, 0.5)',
               boxShadow: '0 10px 40px rgba(0,0,0,0.85)',
-              maxWidth: '380px',
+              maxWidth: '360px',
               width: '90%'
             }}
           >
-            <div style={{ background: 'rgba(255, 42, 141, 0.15)', width: '56px', height: '56px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <Lock size={28} color="#ff2a8d" />
+            <div style={{ background: 'rgba(255, 42, 141, 0.15)', width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+              <Lock size={24} color="#ff2a8d" />
             </div>
-            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#fbbf24', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '6px' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#fbbf24', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px' }}>
               LEVEL {idx + 1} LOCKED 🔒
             </div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#ffffff', marginBottom: '8px' }}>
+            <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#ffffff', marginBottom: '12px' }}>
               {title}
             </div>
-            <div style={{ fontSize: '0.85rem', color: '#94a3b8', lineHeight: 1.5 }}>
-              Complete <strong style={{ color: '#ff758c' }}>Level {idx}</strong> above to unlock this 3D stage! ✨
-            </div>
+            <button
+              onClick={onUnlockClick}
+              style={{
+                background: 'linear-gradient(135deg, #ff2a8d 0%, #ff758c 100%)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '30px',
+                padding: '10px 22px',
+                fontSize: '0.85rem',
+                fontWeight: '700',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 4px 15px rgba(255, 42, 141, 0.4)'
+              }}
+            >
+              <Unlock size={14} />
+              <span>UNLOCK & PLAY STEP {idx + 1}</span>
+            </button>
           </div>
         </div>
       )}
