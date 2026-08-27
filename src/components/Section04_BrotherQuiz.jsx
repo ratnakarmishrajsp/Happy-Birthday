@@ -7,36 +7,36 @@ import { triggerConfetti } from '../utils/confetti';
 const quizQuestions = [
   {
     id: 1,
-    question: "Who gets annoyed first when you start disturbing him?",
+    question: "How fast does Anshika's mood change when someone offers her favorite food?",
     options: [
-      { key: 'A', text: 'Anshika', correct: false },
-      { key: 'B', text: 'Me', correct: false },
-      { key: 'C', text: 'Both of us', correct: false },
-      { key: 'D', text: 'Obviously Mom 😂', correct: true }
+      { key: 'A', text: '10 minutes ⌛', correct: false },
+      { key: 'B', text: '5 minutes ⏱️', correct: false },
+      { key: 'C', text: 'Faster than 5G internet ⚡', correct: true },
+      { key: 'D', text: 'She never changes her mood 🧊', correct: false }
     ],
-    explanation: "Mom has zero tolerance for our drama! 😂"
+    explanation: "Food is the ultimate cheat code for instant happiness! 🍕🍔"
   },
   {
     id: 2,
-    question: "What is Anshika's most powerful superpower?",
+    question: "What actually happens when Anshika sets an alarm for 7:00 AM?",
     options: [
-      { key: 'A', text: 'Making tea', correct: false },
-      { key: 'B', text: 'Watching Reels', correct: false },
-      { key: 'C', text: 'Disturbing her brother', correct: false },
-      { key: 'D', text: 'All of the above 💀', correct: true }
+      { key: 'A', text: 'Wakes up at 6:59 AM full of energy 🌅', correct: false },
+      { key: 'B', text: 'Wakes up at 7:00 AM sharp 🔔', correct: false },
+      { key: 'C', text: 'Snoozes it 14 times and wakes up at 11:00 AM 😂', correct: true },
+      { key: 'D', text: 'The alarm wakes up, but she doesn\'t 😴', correct: false }
     ],
-    explanation: "A triple-threat of destruction! 💀"
+    explanation: "Snooze button's worst nightmare! ⏰😴"
   },
   {
     id: 3,
-    question: "What usually happens when we are together?",
+    question: "What secret teasing nicknames does Ratnakar use for Anshika at home?",
     options: [
-      { key: 'A', text: 'Peace', correct: false },
-      { key: 'B', text: 'Silence', correct: false },
-      { key: 'C', text: 'Random arguments + laughing', correct: true },
-      { key: 'D', text: 'Meditation', correct: false }
+      { key: 'A', text: 'Pagal 🤪', correct: false },
+      { key: 'B', text: 'Badmash 😈', correct: false },
+      { key: 'C', text: 'Sadhivaaa 👑', correct: false },
+      { key: 'D', text: 'All of the above 😂❤️', correct: true }
     ],
-    explanation: "From yelling to dying of laughter in 2 seconds flat."
+    explanation: "Pagal + Badmash + Sadhivaaa = The ultimate combo! 😂❤️"
   },
   {
     id: 4,

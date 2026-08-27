@@ -16,10 +16,10 @@ const roastCards = [
   {
     id: 2,
     badge: "ROAST CARD 02 / 04",
-    title: "LE LE PE PE 🗣️",
+    title: "LE LE PE PE PE 🗣️",
     icon: Sparkles,
     color: "#9d4edd",
-    text: "Her legendary 'le-le, pe-pe' moments. No explanation required. 😂"
+    text: "Her legendary 'le-le, pe-pe' moments. No explanation required. Le Le Pe Pe Pe 😂"
   },
   {
     id: 3,
