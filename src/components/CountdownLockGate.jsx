@@ -1,9 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, Sparkles as ThreeSparkles } from '@react-three/drei';
-import * as THREE from 'three';
-import { Key, Lock, Sparkles, ShieldCheck, Zap, X, RotateCcw } from 'lucide-react';
+import { Key, Lock, Sparkles, ShieldCheck, Zap, X } from 'lucide-react';
 import { soundEngine } from '../utils/soundEngine';
 import { triggerConfetti, triggerHeartConfetti } from '../utils/confetti';
 
@@ -13,7 +10,7 @@ const TEASING_ATTEMPTS = [
     btn: "TRY AGAIN 🔄 (Attempt 1/4)"
   },
   {
-    msg: "Patience Dino Boss! 🦖 The Gate engine is charging for 30th August 12:00 AM Midnight!",
+    msg: "Patience Dino Boss! REX The Gate engine is charging for 30th August 12:00 AM Midnight!",
     btn: "TRY AGAIN 🔄 (Attempt 2/4)"
   },
   {
@@ -25,18 +22,6 @@ const TEASING_ATTEMPTS = [
     btn: "TRY AGAIN 🔄 (Attempt 4/4)"
   }
 ];
-
-// 3D Floating Particles & Stars Background
-function CosmicGateBackground() {
-  return (
-    <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} intensity={1.5} color="#fbbf24" />
-      <pointLight position={[-10, -10, -5]} intensity={1.2} color="#ff2a8d" />
-      <ThreeSparkles count={180} scale={12} size={3} speed={0.4} color="#fbbf24" />
-    </Canvas>
-  );
-}
 
 export default function CountdownLockGate({ onUnlock }) {
   const targetTime = new Date('2026-08-30T00:00:00+05:30').getTime();
@@ -99,7 +84,6 @@ export default function CountdownLockGate({ onUnlock }) {
     setIsKeyAnimating(true);
     setActiveMessage(null);
 
-    // Simulate key insertion & failed lock turn sequence
     setTimeout(() => {
       soundEngine.playError();
       setIsKeyAnimating(false);
@@ -133,15 +117,26 @@ export default function CountdownLockGate({ onUnlock }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px',
+        padding: '16px',
         overflow: 'hidden',
         perspective: '1200px'
       }}
     >
-      {/* 3D Background */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <CosmicGateBackground />
-      </div>
+      {/* Background Radial Glows */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '20%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '500px',
+          height: '500px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(251, 191, 36, 0.2) 0%, rgba(255, 42, 141, 0) 70%)',
+          pointerEvents: 'none',
+          filter: 'blur(50px)'
+        }}
+      />
 
       {/* Top Countdown Header Bar */}
       <motion.div
@@ -151,7 +146,7 @@ export default function CountdownLockGate({ onUnlock }) {
         style={{
           position: 'relative',
           zIndex: 10,
-          marginBottom: '20px',
+          marginBottom: '14px',
           textAlign: 'center'
         }}
       >
@@ -181,7 +176,7 @@ export default function CountdownLockGate({ onUnlock }) {
             alignItems: 'center',
             justifyContent: 'center',
             gap: '10px',
-            marginTop: '12px'
+            marginTop: '10px'
           }}
         >
           {[
@@ -193,10 +188,10 @@ export default function CountdownLockGate({ onUnlock }) {
             <div
               key={idx}
               style={{
-                background: 'rgba(15, 10, 30, 0.85)',
-                border: '1px solid rgba(251, 191, 36, 0.3)',
+                background: 'rgba(15, 10, 30, 0.9)',
+                border: '1px solid rgba(251, 191, 36, 0.35)',
                 borderRadius: '14px',
-                padding: '8px 14px',
+                padding: '6px 12px',
                 textAlign: 'center',
                 boxShadow: '0 4px 15px rgba(0,0,0,0.6)',
                 backdropFilter: 'blur(10px)'
@@ -213,126 +208,218 @@ export default function CountdownLockGate({ onUnlock }) {
         </div>
       </motion.div>
 
-      {/* The Majestic Golden Royal Gate & Lock Frame */}
+      {/* The Majestic Real Golden Palace Gate */}
       <div
         style={{
           position: 'relative',
           width: '100%',
-          maxWidth: '520px',
-          height: 'clamp(250px, 36vh, 360px)',
+          maxWidth: '500px',
+          height: 'clamp(260px, 38vh, 370px)',
           zIndex: 5,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          margin: '10px 0'
+          padding: '6px',
+          background: 'linear-gradient(135deg, #d97706 0%, #fbbf24 50%, #92400e 100%)',
+          borderRadius: '28px',
+          boxShadow: '0 15px 50px rgba(0,0,0,0.9), 0 0 35px rgba(251, 191, 36, 0.35)'
         }}
       >
-        {/* Left Swinging Golden Gate Door */}
-        <motion.div
-          animate={{
-            rotateY: isGateOpening ? -100 : 0,
-            x: isGateOpening ? -180 : 0
-          }}
-          transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: '50%',
-            background: 'linear-gradient(135deg, rgba(30, 20, 60, 0.95) 0%, rgba(15, 10, 35, 0.98) 100%)',
-            border: '2px solid rgba(251, 191, 36, 0.6)',
-            borderRight: '1px solid rgba(251, 191, 36, 0.3)',
-            borderRadius: '24px 0 0 24px',
-            transformOrigin: 'left center',
-            boxShadow: 'inset 0 0 40px rgba(251, 191, 36, 0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            paddingRight: '15px'
-          }}
-        >
-          {/* Gate Metallic Ornaments */}
-          <div style={{ border: '2px dashed rgba(251, 191, 36, 0.3)', width: '80%', height: '80%', borderRadius: '16px' }} />
-        </motion.div>
-
-        {/* Right Swinging Golden Gate Door */}
-        <motion.div
-          animate={{
-            rotateY: isGateOpening ? 100 : 0,
-            x: isGateOpening ? 180 : 0
-          }}
-          transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            position: 'absolute',
-            right: 0,
-            top: 0,
-            bottom: 0,
-            width: '50%',
-            background: 'linear-gradient(135deg, rgba(30, 20, 60, 0.95) 0%, rgba(15, 10, 35, 0.98) 100%)',
-            border: '2px solid rgba(251, 191, 36, 0.6)',
-            borderLeft: '1px solid rgba(251, 191, 36, 0.3)',
-            borderRadius: '0 24px 24px 0',
-            transformOrigin: 'right center',
-            boxShadow: 'inset 0 0 40px rgba(251, 191, 36, 0.15)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            paddingLeft: '15px'
-          }}
-        >
-          {/* Gate Metallic Ornaments */}
-          <div style={{ border: '2px dashed rgba(251, 191, 36, 0.3)', width: '80%', height: '80%', borderRadius: '16px' }} />
-        </motion.div>
-
-        {/* Central Heavy Golden Lock Core */}
-        <motion.div
-          animate={{
-            scale: isKeyAnimating ? [1, 1.15, 0.95, 1] : 1,
-            rotate: isKeyAnimating ? [0, 15, -15, 0] : 0
-          }}
-          transition={{ duration: 1.2 }}
+        {/* Gate Archway Frame Interior */}
+        <div
           style={{
             position: 'relative',
-            zIndex: 20,
-            width: 'clamp(110px, 26vw, 135px)',
-            height: 'clamp(110px, 26vw, 135px)',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
-            border: '4px solid #ffffff',
-            boxShadow: '0 0 40px rgba(251, 191, 36, 0.8), inset 0 0 15px rgba(0,0,0,0.5)',
+            width: '100%',
+            height: '100%',
+            borderRadius: '22px',
+            backgroundColor: '#090616',
+            overflow: 'hidden',
             display: 'flex',
-            flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer'
+            justifyContent: 'center'
           }}
-          onClick={handleKeyClick}
         >
-          <Lock size={38} color="#070712" />
-          <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#070712', marginTop: '4px', letterSpacing: '1px' }}>
-            {isGateOpening ? 'UNLOCKED' : 'LOCKED'}
-          </span>
-        </motion.div>
+          {/* Left Swinging Palace Gate Door Leaf */}
+          <motion.div
+            animate={{
+              rotateY: isGateOpening ? -105 : 0,
+              x: isGateOpening ? -200 : 0
+            }}
+            transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: '50%',
+              background: 'linear-gradient(180deg, #1e143c 0%, #0d0822 100%)',
+              borderRight: '2px solid #fbbf24',
+              borderRadius: '20px 0 0 20px',
+              transformOrigin: 'left center',
+              boxShadow: 'inset 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(251, 191, 36, 0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+              padding: '12px 10px',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Vertical Golden Iron Bars */}
+            {[0, 1, 2, 3].map((bar) => (
+              <div
+                key={bar}
+                style={{
+                  width: '6px',
+                  height: '100%',
+                  background: 'linear-gradient(180deg, #d97706 0%, #fbbf24 50%, #92400e 100%)',
+                  borderRadius: '3px',
+                  boxShadow: '0 0 8px rgba(251, 191, 36, 0.4)'
+                }}
+              />
+            ))}
 
-        {/* Animated Flying Key Element */}
-        <motion.div
-          animate={{
-            x: isKeyAnimating ? [0, 0, 0, 0] : 0,
-            y: isKeyAnimating ? [120, 0, 0, 120] : 120,
-            rotate: isKeyAnimating ? [0, 360, 720, 0] : 0,
-            scale: isKeyAnimating ? [1, 1.3, 1] : 1
-          }}
-          transition={{ duration: 1.5, ease: 'easeInOut' }}
-          style={{
-            position: 'absolute',
-            zIndex: 30,
-            pointerEvents: 'none',
-            filter: 'drop-shadow(0 0 15px #fbbf24)'
-          }}
-        >
-          <Key size={44} color="#fbbf24" />
-        </motion.div>
+            {/* Embossed Golden Diamond Crest Panel */}
+            <div
+              style={{
+                position: 'absolute',
+                width: '60px',
+                height: '60px',
+                transform: 'rotate(45deg)',
+                border: '3px solid #fbbf24',
+                background: 'rgba(251, 191, 36, 0.12)',
+                boxShadow: '0 0 15px rgba(251, 191, 36, 0.4)'
+              }}
+            />
+
+            {/* Door Ring Handle */}
+            <div
+              style={{
+                position: 'absolute',
+                right: '12px',
+                width: '26px',
+                height: '26px',
+                borderRadius: '50%',
+                border: '3px solid #fbbf24',
+                boxShadow: '0 0 10px rgba(251, 191, 36, 0.5)'
+              }}
+            />
+          </motion.div>
+
+          {/* Right Swinging Palace Gate Door Leaf */}
+          <motion.div
+            animate={{
+              rotateY: isGateOpening ? 105 : 0,
+              x: isGateOpening ? 200 : 0
+            }}
+            transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: '50%',
+              background: 'linear-gradient(180deg, #1e143c 0%, #0d0822 100%)',
+              borderLeft: '2px solid #fbbf24',
+              borderRadius: '0 20px 20px 0',
+              transformOrigin: 'right center',
+              boxShadow: 'inset 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(251, 191, 36, 0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-evenly',
+              padding: '12px 10px',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Vertical Golden Iron Bars */}
+            {[0, 1, 2, 3].map((bar) => (
+              <div
+                key={bar}
+                style={{
+                  width: '6px',
+                  height: '100%',
+                  background: 'linear-gradient(180deg, #d97706 0%, #fbbf24 50%, #92400e 100%)',
+                  borderRadius: '3px',
+                  boxShadow: '0 0 8px rgba(251, 191, 36, 0.4)'
+                }}
+              />
+            ))}
+
+            {/* Embossed Golden Diamond Crest Panel */}
+            <div
+              style={{
+                position: 'absolute',
+                width: '60px',
+                height: '60px',
+                transform: 'rotate(45deg)',
+                border: '3px solid #fbbf24',
+                background: 'rgba(251, 191, 36, 0.12)',
+                boxShadow: '0 0 15px rgba(251, 191, 36, 0.4)'
+              }}
+            />
+
+            {/* Door Ring Handle */}
+            <div
+              style={{
+                position: 'absolute',
+                left: '12px',
+                width: '26px',
+                height: '26px',
+                borderRadius: '50%',
+                border: '3px solid #fbbf24',
+                boxShadow: '0 0 10px rgba(251, 191, 36, 0.5)'
+              }}
+            />
+          </motion.div>
+
+          {/* Central Heavy Golden Metallic Lock Core */}
+          <motion.div
+            animate={{
+              scale: isKeyAnimating ? [1, 1.18, 0.92, 1] : 1,
+              rotate: isKeyAnimating ? [0, 18, -18, 0] : 0
+            }}
+            transition={{ duration: 1.2 }}
+            style={{
+              position: 'relative',
+              zIndex: 20,
+              width: 'clamp(100px, 24vw, 130px)',
+              height: 'clamp(100px, 24vw, 130px)',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #fbbf24 0%, #b45309 100%)',
+              border: '4px solid #ffffff',
+              boxShadow: '0 0 45px rgba(251, 191, 36, 0.9), inset 0 0 20px rgba(0,0,0,0.6)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer'
+            }}
+            onClick={handleKeyClick}
+          >
+            <Lock size={36} color="#070712" />
+            <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#070712', marginTop: '4px', letterSpacing: '1px' }}>
+              {isGateOpening ? 'UNLOCKED' : 'LOCKED'}
+            </span>
+          </motion.div>
+
+          {/* Animated Flying Key Element */}
+          <motion.div
+            animate={{
+              x: isKeyAnimating ? [0, 0, 0, 0] : 0,
+              y: isKeyAnimating ? [110, 0, 0, 110] : 110,
+              rotate: isKeyAnimating ? [0, 360, 720, 0] : 0,
+              scale: isKeyAnimating ? [1, 1.3, 1] : 1
+            }}
+            transition={{ duration: 1.5, ease: 'easeInOut' }}
+            style={{
+              position: 'absolute',
+              zIndex: 30,
+              pointerEvents: 'none',
+              filter: 'drop-shadow(0 0 15px #fbbf24)'
+            }}
+          >
+            <Key size={42} color="#fbbf24" />
+          </motion.div>
+        </div>
       </div>
 
       {/* Teasing Message Card Popup */}
@@ -345,16 +432,16 @@ export default function CountdownLockGate({ onUnlock }) {
             style={{
               position: 'relative',
               zIndex: 30,
-              marginTop: '20px',
+              marginTop: '16px',
               maxWidth: '520px',
               width: '92%',
-              background: 'rgba(255, 42, 141, 0.22)',
-              border: '1px solid rgba(255, 42, 141, 0.6)',
+              background: 'rgba(255, 42, 141, 0.25)',
+              border: '1px solid rgba(255, 42, 141, 0.65)',
               borderRadius: '20px',
-              padding: '14px 20px',
+              padding: '12px 18px',
               textAlign: 'center',
               color: '#ffffff',
-              fontSize: '0.95rem',
+              fontSize: '0.9rem',
               fontWeight: 700,
               boxShadow: '0 8px 30px rgba(255, 42, 141, 0.4)',
               backdropFilter: 'blur(12px)'
@@ -373,11 +460,11 @@ export default function CountdownLockGate({ onUnlock }) {
         style={{
           position: 'relative',
           zIndex: 30,
-          marginTop: '24px',
+          marginTop: '16px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '14px',
+          gap: '12px',
           flexWrap: 'wrap'
         }}
       >
@@ -387,7 +474,7 @@ export default function CountdownLockGate({ onUnlock }) {
           className="glow-button"
           style={{ minWidth: '220px' }}
         >
-          <Key size={20} />
+          <Key size={18} />
           <span>
             {attemptCount === 0
               ? 'CLICK KEY TO UNLOCK GATE 🔑'
@@ -406,7 +493,7 @@ export default function CountdownLockGate({ onUnlock }) {
             border: '1px solid rgba(157, 78, 221, 0.6)',
             color: '#fbbf24',
             borderRadius: '24px',
-            padding: '10px 20px',
+            padding: '10px 18px',
             fontSize: '0.85rem',
             fontWeight: 700,
             cursor: 'pointer',
