@@ -57,7 +57,7 @@ export default function Section02_Hero({ onStartSurprise }) {
             gap: '8px'
           }}
         >
-          <Sparkles size={14} /> 30 August 2002 • Birthday Surprise
+          <Sparkles size={14} /> 30 August 2026 • Birthday Surprise
         </span>
       </motion.div>
 
