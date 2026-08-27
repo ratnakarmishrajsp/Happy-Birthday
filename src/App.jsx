@@ -53,16 +53,16 @@ export default function App() {
   };
 
   const scrollToSection = (id, idx) => {
-    if (idx > unlockedMaxIndex) {
-      soundEngine.playError();
-      return;
-    }
-    soundEngine.playClick();
-    const elem = document.getElementById(id);
-    if (elem) {
-      const topPos = elem.getBoundingClientRect().top + window.pageYOffset - 10;
-      window.scrollTo({ top: topPos, behavior: 'smooth' });
-    }
+    soundEngine.playUnlock();
+    setUnlockedMaxIndex(prev => Math.max(prev, idx));
+    
+    setTimeout(() => {
+      const elem = document.getElementById(id);
+      if (elem) {
+        const topPos = elem.getBoundingClientRect().top + window.pageYOffset - 10;
+        window.scrollTo({ top: topPos, behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   useEffect(() => {
@@ -74,6 +74,7 @@ export default function App() {
         const elem = document.getElementById(SECTIONS[i].id);
         if (elem && elem.offsetTop <= scrollPos) {
           setActiveSectionId(SECTIONS[i].id);
+          setUnlockedMaxIndex(prev => Math.max(prev, i));
           break;
         }
       }
@@ -109,14 +110,40 @@ export default function App() {
               gap: '6px',
               padding: '6px 14px',
               borderRadius: '30px',
-              background: 'rgba(15, 10, 30, 0.85)',
+              background: 'rgba(15, 10, 30, 0.88)',
               backdropFilter: 'blur(18px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.7)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.8)',
               maxWidth: '94vw',
               overflowX: 'auto'
             }}
           >
+            <button
+              onClick={() => {
+                soundEngine.playUnlock();
+                setUnlockedMaxIndex(SECTIONS.length - 1);
+              }}
+              style={{
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '20px',
+                padding: '5px 12px',
+                fontSize: '0.72rem',
+                fontWeight: '800',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 0 12px rgba(16, 185, 129, 0.5)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                marginRight: '4px'
+              }}
+            >
+              <Unlock size={11} />
+              <span>UNLOCK ALL 🔓</span>
+            </button>
+
             {SECTIONS.map((sec, idx) => {
               const isUnlocked = idx <= unlockedMaxIndex;
               const isActive = activeSectionId === sec.id;
@@ -127,27 +154,27 @@ export default function App() {
                   onClick={() => scrollToSection(sec.id, idx)}
                   style={{
                     background: isActive
-                      ? 'rgba(255, 42, 141, 0.85)'
+                      ? 'linear-gradient(135deg, #ff2a8d 0%, #ff758c 100%)'
                       : isUnlocked
-                      ? 'rgba(255, 255, 255, 0.1)'
-                      : 'rgba(255, 255, 255, 0.03)',
-                    color: isActive ? '#ffffff' : isUnlocked ? '#e2e8f0' : '#64748b',
-                    border: 'none',
+                      ? 'rgba(255, 255, 255, 0.12)'
+                      : 'rgba(255, 255, 255, 0.05)',
+                    color: isActive ? '#ffffff' : isUnlocked ? '#e2e8f0' : '#94a3b8',
+                    border: isActive ? '1px solid #ff758c' : '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '20px',
                     padding: '5px 11px',
                     fontSize: '0.72rem',
                     fontWeight: '700',
-                    cursor: isUnlocked ? 'pointer' : 'not-allowed',
+                    cursor: 'pointer',
                     whiteSpace: 'nowrap',
                     transition: 'all 0.3s ease',
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '4px',
-                    opacity: isUnlocked ? 1 : 0.6
+                    opacity: 1
                   }}
                 >
                   <span>{sec.label}</span>
-                  {!isUnlocked && <Lock size={10} color="#94a3b8" />}
+                  {!isUnlocked && <Lock size={10} color="#fbbf24" />}
                 </button>
               );
             })}
