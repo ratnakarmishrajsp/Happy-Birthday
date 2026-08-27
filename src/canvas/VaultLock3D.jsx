@@ -68,8 +68,13 @@ function HeartLock({ isUnlocked, onClick }) {
 
 export default function VaultLock3D({ isUnlocked, onLockClick }) {
   return (
-    <div style={{ width: '100%', height: '300px', position: 'relative', cursor: 'pointer' }}>
-      <Canvas camera={{ position: [0, 0.5, 3.8], fov: 45 }}>
+    <div
+      onClick={() => {
+        if (onLockClick) onLockClick();
+      }}
+      style={{ width: '100%', height: '300px', position: 'relative', cursor: 'pointer' }}
+    >
+      <Canvas camera={{ position: [0, 0.5, 3.8], fov: 45 }} style={{ pointerEvents: 'auto' }}>
         <ambientLight intensity={0.6} />
         <pointLight position={[5, 5, 5]} intensity={2} color="#fbbf24" />
         <pointLight position={[-5, -5, -2]} intensity={1} color="#ff2a8d" />

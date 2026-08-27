@@ -36,7 +36,7 @@ const SECTIONS = [
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [unlockedMaxIndex, setUnlockedMaxIndex] = useState(0);
+  const [unlockedMaxIndex, setUnlockedMaxIndex] = useState(SECTIONS.length - 1);
   const [activeSectionId, setActiveSectionId] = useState('hero');
 
   const unlockAndScrollTo = (targetIndex) => {

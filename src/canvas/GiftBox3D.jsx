@@ -134,8 +134,13 @@ export default function GiftBox3D({ isOpen, onBoxClick }) {
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
-    <div style={{ width: '100%', height: isMobile ? '320px' : '380px', position: 'relative', cursor: 'pointer' }}>
-      <Canvas camera={{ position: [0, 1.5, isMobile ? 5.4 : 4.2], fov: isMobile ? 52 : 45 }}>
+    <div
+      onClick={() => {
+        if (onBoxClick) onBoxClick();
+      }}
+      style={{ width: '100%', height: isMobile ? '320px' : '380px', position: 'relative', cursor: 'pointer' }}
+    >
+      <Canvas camera={{ position: [0, 1.5, isMobile ? 5.4 : 4.2], fov: isMobile ? 52 : 45 }} style={{ pointerEvents: 'auto' }}>
         <ambientLight intensity={0.7} />
         <pointLight position={[5, 6, 5]} intensity={2} color="#ffffff" />
         <pointLight position={[-5, -2, -2]} intensity={1} color="#ff2a8d" />
