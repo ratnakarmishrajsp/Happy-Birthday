@@ -112,88 +112,8 @@ export default function App() {
         <Section01_Loading onComplete={() => setIsLoading(false)} />
       ) : (
         <>
-          {/* Top Stage Header Bar */}
+          {/* Bottom Stage Navigation Bar */}
           <header
-            style={{
-              position: 'fixed',
-              top: '16px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 9998,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '12px',
-              padding: '10px 20px',
-              width: '92%',
-              maxWidth: '850px',
-              borderRadius: '30px',
-              background: 'rgba(15, 10, 30, 0.82)',
-              backdropFilter: 'blur(18px)',
-              border: '1px solid rgba(255, 42, 141, 0.35)',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.7)'
-            }}
-          >
-            {/* Title / Stage Indicator */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '1.1rem' }}>👑</span>
-              <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#fbbf24', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                  STAGE {currentStageIndex + 1} OF 12
-                </div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff' }}>
-                  {SECTIONS[currentStageIndex].title}
-                </div>
-              </div>
-            </div>
-
-            {/* Stage Progress Bar */}
-            <div style={{ flex: 1, maxWidth: '200px', height: '6px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '10px', overflow: 'hidden' }}>
-              <motion.div
-                animate={{ width: `${progressPercent}%` }}
-                transition={{ duration: 0.4 }}
-                style={{
-                  height: '100%',
-                  background: 'linear-gradient(90deg, #ff2a8d 0%, #fbbf24 100%)',
-                  borderRadius: '10px'
-                }}
-              />
-            </div>
-
-            {/* Quick Step Counter Badge */}
-            <div
-              style={{
-                background: 'rgba(255, 42, 141, 0.2)',
-                border: '1px solid rgba(255, 42, 141, 0.5)',
-                color: '#ff758c',
-                padding: '4px 12px',
-                borderRadius: '16px',
-                fontSize: '0.75rem',
-                fontWeight: 800
-              }}
-            >
-              {progressPercent}%
-            </div>
-          </header>
-
-          {/* Main Stage View Container (Single Active Screen Architecture) */}
-          <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', width: '100%' }}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStageIndex}
-                initial={{ opacity: 0, scale: 0.94, y: 25 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 1.05, y: -25 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-                style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
-              >
-                {renderActiveSection()}
-              </motion.div>
-            </AnimatePresence>
-          </main>
-
-          {/* Bottom Stage Navigation Dock */}
-          <nav
             style={{
               position: 'fixed',
               bottom: '16px',
@@ -203,117 +123,101 @@ export default function App() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              gap: '8px',
-              padding: '8px 14px',
+              gap: '12px',
+              padding: '8px 16px',
+              width: '92%',
+              maxWidth: '850px',
               borderRadius: '30px',
-              background: 'rgba(15, 10, 30, 0.92)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 42, 141, 0.4)',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.85)',
-              maxWidth: '94vw',
-              width: 'max-content'
+              background: 'rgba(15, 10, 30, 0.88)',
+              backdropFilter: 'blur(18px)',
+              border: '1px solid rgba(255, 42, 141, 0.35)',
+              boxShadow: '0 -5px 30px rgba(0,0,0,0.8)'
             }}
           >
-            {/* Prev Stage Button */}
-            <button
-              onClick={() => goToStage(currentStageIndex - 1)}
-              disabled={currentStageIndex === 0 || isWarping}
-              style={{
-                background: currentStageIndex === 0 ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.15)',
-                color: currentStageIndex === 0 ? '#475569' : '#ffffff',
-                border: 'none',
-                borderRadius: '20px',
-                padding: '6px 14px',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                cursor: currentStageIndex === 0 ? 'not-allowed' : 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                flexShrink: 0,
-                transition: 'all 0.2s ease'
-              }}
-            >
-              <ChevronLeft size={16} />
-              <span>PREV</span>
-            </button>
+            {/* Back Button */}
+            {currentStageIndex > 0 ? (
+              <button
+                onClick={() => goToStage(currentStageIndex - 1)}
+                disabled={isWarping}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.12)',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '20px',
+                  padding: '6px 14px',
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <ChevronLeft size={16} />
+                <span>BACK</span>
+              </button>
+            ) : (
+              <div style={{ width: '70px' }} />
+            )}
 
-            {/* Scrubber Pills Container */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '5px',
-                overflowX: 'auto',
-                maxWidth: '65vw',
-                scrollbarWidth: 'none',
-                padding: '2px 4px'
-              }}
-            >
-              {SECTIONS.map((sec, idx) => {
-                const isActive = currentStageIndex === idx;
-                const isUnlocked = idx <= completedMaxIndex;
-
-                return (
-                  <button
-                    key={sec.id}
-                    onClick={() => goToStage(idx)}
-                    title={sec.title}
-                    style={{
-                      background: isActive
-                        ? 'linear-gradient(135deg, #ff2a8d 0%, #ff758c 100%)'
-                        : isUnlocked
-                        ? 'rgba(255, 255, 255, 0.15)'
-                        : 'rgba(255, 255, 255, 0.05)',
-                      color: isActive ? '#ffffff' : isUnlocked ? '#e2e8f0' : '#64748b',
-                      border: isActive ? '1px solid #ff758c' : '1px solid rgba(255, 255, 255, 0.15)',
-                      borderRadius: '20px',
-                      padding: '5px 10px',
-                      fontSize: '0.75rem',
-                      fontWeight: '700',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                      transition: 'all 0.3s ease',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      flexShrink: 0
-                    }}
-                  >
-                    <span>{sec.label}</span>
-                    {!isUnlocked && <Lock size={11} color="#fbbf24" />}
-                  </button>
-                );
-              })}
+            {/* Title / Stage Indicator */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'center' }}>
+              <span style={{ fontSize: '1.1rem' }}>👑</span>
+              <div>
+                <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#fbbf24', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                  STAGE {currentStageIndex + 1} OF 12
+                </div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#ffffff' }}>
+                  {SECTIONS[currentStageIndex].title}
+                </div>
+              </div>
             </div>
 
-            {/* Next Stage Button */}
-            <button
-              onClick={() => goToStage(currentStageIndex + 1)}
-              disabled={currentStageIndex === SECTIONS.length - 1 || isWarping}
-              style={{
-                background: currentStageIndex === SECTIONS.length - 1
-                  ? 'rgba(255, 255, 255, 0.05)'
-                  : 'linear-gradient(135deg, #ff2a8d 0%, #ff758c 100%)',
-                color: currentStageIndex === SECTIONS.length - 1 ? '#475569' : '#ffffff',
-                border: 'none',
-                borderRadius: '20px',
-                padding: '6px 14px',
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                cursor: currentStageIndex === SECTIONS.length - 1 ? 'not-allowed' : 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                flexShrink: 0,
-                transition: 'all 0.2s ease',
-                boxShadow: currentStageIndex === SECTIONS.length - 1 ? 'none' : '0 4px 15px rgba(255, 42, 141, 0.4)'
-              }}
-            >
-              <span>NEXT</span>
-              <ChevronRight size={16} />
-            </button>
-          </nav>
+            {/* Stage Progress Bar & Counter */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '80px', height: '6px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '10px', overflow: 'hidden' }}>
+                <motion.div
+                  animate={{ width: `${progressPercent}%` }}
+                  transition={{ duration: 0.4 }}
+                  style={{
+                    height: '100%',
+                    background: 'linear-gradient(90deg, #ff2a8d 0%, #fbbf24 100%)',
+                    borderRadius: '10px'
+                  }}
+                />
+              </div>
+              <div
+                style={{
+                  background: 'rgba(255, 42, 141, 0.2)',
+                  border: '1px solid rgba(255, 42, 141, 0.5)',
+                  color: '#ff758c',
+                  padding: '3px 10px',
+                  borderRadius: '14px',
+                  fontSize: '0.75rem',
+                  fontWeight: 800
+                }}
+              >
+                {progressPercent}%
+              </div>
+            </div>
+          </header>
+
+          {/* Main Stage View Container (Single Active Screen Architecture) */}
+          <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', width: '100%', paddingTop: '60px', paddingBottom: '90px' }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStageIndex}
+                initial={{ opacity: 0, scale: 0.94, y: 25 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 1.05, y: -25 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+                style={{ width: '100%', minHeight: 'calc(100vh - 150px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+              >
+                {renderActiveSection()}
+              </motion.div>
+            </AnimatePresence>
+          </main>
         </>
       )}
     </div>

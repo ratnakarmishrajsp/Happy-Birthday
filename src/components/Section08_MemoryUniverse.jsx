@@ -63,62 +63,8 @@ export default function Section08_MemoryUniverse({ onNextSection }) {
       </motion.div>
 
       {/* 3D Galaxy Canvas */}
-      <div style={{ width: '100%', maxWidth: '850px' }}>
+      <div style={{ width: '100%', maxWidth: '950px', marginBottom: '28px' }}>
         <Galaxy3D onSelectOrb={handleSelectOrb} />
-      </div>
-
-      {/* Quick Select Photo Cards Grid for easy viewing */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
-          gap: '12px',
-          width: '100%',
-          maxWidth: '850px',
-          marginTop: '20px',
-          marginBottom: '32px'
-        }}
-      >
-        {memoryPhotos.map((item, idx) => (
-          <motion.button
-            key={item.id}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleSelectOrb(idx)}
-            className="glass-panel"
-            style={{
-              padding: '8px',
-              borderRadius: '16px',
-              cursor: 'pointer',
-              borderColor: 'rgba(255, 42, 141, 0.3)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '6px',
-              background: 'rgba(15, 12, 35, 0.7)'
-            }}
-          >
-            <div style={{ width: '100%', height: '80px', borderRadius: '10px', overflow: 'hidden', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <img
-                src={item.path}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = item.fallback;
-                }}
-                alt={item.title}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  transform: item.rotate ? `rotate(${item.rotate}deg)` : 'none'
-                }}
-              />
-            </div>
-            <span style={{ color: '#fff', fontSize: '0.75rem', fontWeight: '700', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '130px' }}>
-              {item.title}
-            </span>
-          </motion.button>
-        ))}
       </div>
 
       <motion.div>
