@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Lock, Unlock } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
+
 import Background3D from './canvas/Background3D';
+import CosmicWarpOverlay from './canvas/CosmicWarpOverlay';
 import AudioController from './components/AudioController';
 
 import Section01_Loading from './components/Section01_Loading';
@@ -36,291 +39,282 @@ const SECTIONS = [
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [activeSectionId, setActiveSectionId] = useState('hero');
-  const [unlockedMaxIndex, setUnlockedMaxIndex] = useState(0);
+  const [currentStageIndex, setCurrentStageIndex] = useState(0);
+  const [completedMaxIndex, setCompletedMaxIndex] = useState(0);
+  const [isWarping, setIsWarping] = useState(false);
+  const [warpTargetTitle, setWarpTargetTitle] = useState('');
 
-  const unlockAndScrollTo = (index) => {
-    soundEngine.playClick();
-    if (index > unlockedMaxIndex) {
-      setUnlockedMaxIndex(index);
-    }
-    const sectionId = SECTIONS[index]?.id;
-    if (sectionId) {
-      setTimeout(() => {
-        const elem = document.getElementById(sectionId);
-        if (elem) {
-          const topPos = elem.getBoundingClientRect().top + window.pageYOffset - 10;
-          window.scrollTo({ top: topPos, behavior: 'smooth' });
-        }
-      }, 50);
+  const goToStage = (targetIndex) => {
+    if (targetIndex < 0 || targetIndex >= SECTIONS.length) return;
+    if (isWarping) return;
+
+    soundEngine.playPop();
+    setWarpTargetTitle(SECTIONS[targetIndex].title);
+    setIsWarping(true);
+
+    setTimeout(() => {
+      setCurrentStageIndex(targetIndex);
+      setCompletedMaxIndex((prev) => Math.max(prev, targetIndex));
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }, 700);
+
+    setTimeout(() => {
+      setIsWarping(false);
+    }, 1400);
+  };
+
+  const renderActiveSection = () => {
+    switch (currentStageIndex) {
+      case 0:
+        return <Section02_Hero onStartSurprise={() => goToStage(1)} />;
+      case 1:
+        return <Section03_Verification onVerified={() => goToStage(2)} />;
+      case 2:
+        return <Section04_BrotherQuiz onQuizComplete={() => goToStage(3)} />;
+      case 3:
+        return <Section05_RoastWall onNextSection={() => goToStage(4)} />;
+      case 4:
+        return <Section06_TeaIncident onNextSection={() => goToStage(5)} />;
+      case 5:
+        return <Section07_GardenIncident onNextSection={() => goToStage(6)} />;
+      case 6:
+        return <Section07B_SisterStats onNextSection={() => goToStage(7)} />;
+      case 7:
+        return <Section08_MemoryUniverse onNextSection={() => goToStage(8)} />;
+      case 8:
+        return <Section09_SisterQuiz onQuizComplete={() => goToStage(9)} />;
+      case 9:
+        return <Section10_SecretLock onUnlockFinal={() => goToStage(10)} />;
+      case 10:
+        return <Section11_FinalReveal onProceedToFinale={() => goToStage(11)} />;
+      case 11:
+        return <Section12_GrandFinale onReplay={() => goToStage(0)} />;
+      default:
+        return <Section02_Hero onStartSurprise={() => goToStage(1)} />;
     }
   };
 
-  const scrollToSection = (id) => {
-    soundEngine.playClick();
-    const idx = SECTIONS.findIndex((s) => s.id === id);
-    if (idx !== -1 && idx > unlockedMaxIndex) {
-      setUnlockedMaxIndex(idx);
-    }
-    const elem = document.getElementById(id);
-    if (elem) {
-      const topPos = elem.getBoundingClientRect().top + window.pageYOffset - 10;
-      window.scrollTo({ top: topPos, behavior: 'smooth' });
-    }
-  };
-
-  useEffect(() => {
-    if (isLoading) return;
-
-    const handleScroll = () => {
-      const scrollPos = window.scrollY + window.innerHeight / 3;
-      for (let i = SECTIONS.length - 1; i >= 0; i--) {
-        const elem = document.getElementById(SECTIONS[i].id);
-        if (elem && elem.offsetTop <= scrollPos) {
-          setActiveSectionId(SECTIONS[i].id);
-          break;
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isLoading]);
+  const progressPercent = Math.round(((currentStageIndex + 1) / SECTIONS.length) * 100);
 
   return (
-    <div style={{ position: 'relative', minHeight: '100vh', width: '100vw', overflowX: 'hidden' }}>
+    <div style={{ position: 'relative', minHeight: '100vh', width: '100vw', overflowX: 'hidden', backgroundColor: '#070712' }}>
       {/* 3D Cosmic Ambient Background */}
       <Background3D />
 
-      {/* Audio Controller Mute/Unmute & BGM Track Selector */}
+      {/* Cosmic Warp / Particle Blast Overlay */}
+      <CosmicWarpOverlay isWarping={isWarping} nextStageTitle={warpTargetTitle} />
+
+      {/* Audio Controller (Music BGM Track Selector & Sound Effects) */}
       <AudioController />
 
-      {/* Section 01: Loading Screen */}
+      {/* Loading Screen */}
       {isLoading ? (
         <Section01_Loading onComplete={() => setIsLoading(false)} />
       ) : (
         <>
-          {/* Apple-Style Sticky Quick Scrubber Pills */}
+          {/* Top Stage Header Bar */}
+          <header
+            style={{
+              position: 'fixed',
+              top: '16px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 9998,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px',
+              padding: '10px 20px',
+              width: '92%',
+              maxWidth: '850px',
+              borderRadius: '30px',
+              background: 'rgba(15, 10, 30, 0.82)',
+              backdropFilter: 'blur(18px)',
+              border: '1px solid rgba(255, 42, 141, 0.35)',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.7)'
+            }}
+          >
+            {/* Title / Stage Indicator */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ fontSize: '1.1rem' }}>👑</span>
+              <div style={{ textAlign: 'left' }}>
+                <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#fbbf24', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                  STAGE {currentStageIndex + 1} OF 12
+                </div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#ffffff' }}>
+                  {SECTIONS[currentStageIndex].title}
+                </div>
+              </div>
+            </div>
+
+            {/* Stage Progress Bar */}
+            <div style={{ flex: 1, maxWidth: '200px', height: '6px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '10px', overflow: 'hidden' }}>
+              <motion.div
+                animate={{ width: `${progressPercent}%` }}
+                transition={{ duration: 0.4 }}
+                style={{
+                  height: '100%',
+                  background: 'linear-gradient(90deg, #ff2a8d 0%, #fbbf24 100%)',
+                  borderRadius: '10px'
+                }}
+              />
+            </div>
+
+            {/* Quick Step Counter Badge */}
+            <div
+              style={{
+                background: 'rgba(255, 42, 141, 0.2)',
+                border: '1px solid rgba(255, 42, 141, 0.5)',
+                color: '#ff758c',
+                padding: '4px 12px',
+                borderRadius: '16px',
+                fontSize: '0.75rem',
+                fontWeight: 800
+              }}
+            >
+              {progressPercent}%
+            </div>
+          </header>
+
+          {/* Main Stage View Container (Single Active Screen Architecture) */}
+          <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', width: '100%' }}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStageIndex}
+                initial={{ opacity: 0, scale: 0.94, y: 25 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 1.05, y: -25 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+                style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
+              >
+                {renderActiveSection()}
+              </motion.div>
+            </AnimatePresence>
+          </main>
+
+          {/* Bottom Stage Navigation Dock */}
           <nav
             style={{
               position: 'fixed',
-              bottom: '20px',
+              bottom: '16px',
               left: '50%',
               transform: 'translateX(-50%)',
-              zIndex: 9999,
+              zIndex: 9998,
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              padding: '6px 14px',
+              justifyContent: 'space-between',
+              gap: '8px',
+              padding: '8px 14px',
               borderRadius: '30px',
-              background: 'rgba(15, 10, 30, 0.88)',
-              backdropFilter: 'blur(18px)',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.8)',
-              maxWidth: '94vw',
-              overflowX: 'auto'
-            }}
-          >
-            {SECTIONS.map((sec, idx) => {
-              const isActive = activeSectionId === sec.id;
-              const isUnlocked = idx <= unlockedMaxIndex;
-
-              return (
-                <button
-                  key={sec.id}
-                  onClick={() => unlockAndScrollTo(idx)}
-                  style={{
-                    background: isActive
-                      ? 'linear-gradient(135deg, #ff2a8d 0%, #ff758c 100%)'
-                      : isUnlocked
-                      ? 'rgba(255, 255, 255, 0.12)'
-                      : 'rgba(255, 255, 255, 0.05)',
-                    color: isActive ? '#ffffff' : isUnlocked ? '#e2e8f0' : '#64748b',
-                    border: isActive ? '1px solid #ff758c' : '1px solid rgba(255, 255, 255, 0.15)',
-                    borderRadius: '20px',
-                    padding: '5px 12px',
-                    fontSize: '0.75rem',
-                    fontWeight: '700',
-                    cursor: 'pointer',
-                    whiteSpace: 'nowrap',
-                    transition: 'all 0.3s ease',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    opacity: isUnlocked ? 1 : 0.7
-                  }}
-                >
-                  <span>{sec.label}</span>
-                  {!isUnlocked && <Lock size={12} color="#fbbf24" />}
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Main Continuous Vertical Scroll Content - Step-by-step progressive unlock */}
-          <main style={{ position: 'relative', zIndex: 1, width: '100%' }}>
-            
-            {/* Step 0: Hero */}
-            <SectionWrapper idx={0} unlockedMaxIndex={unlockedMaxIndex} id="hero" title={SECTIONS[0].title} onUnlockClick={() => unlockAndScrollTo(0)}>
-              <Section02_Hero onStartSurprise={() => unlockAndScrollTo(1)} />
-            </SectionWrapper>
-
-            {/* Step 1: Verification */}
-            <SectionWrapper idx={1} unlockedMaxIndex={unlockedMaxIndex} id="verification" title={SECTIONS[1].title} onUnlockClick={() => unlockAndScrollTo(1)}>
-              <Section03_Verification onVerified={() => unlockAndScrollTo(2)} />
-            </SectionWrapper>
-
-            {/* Step 2: Brother Quiz */}
-            <SectionWrapper idx={2} unlockedMaxIndex={unlockedMaxIndex} id="brother-quiz" title={SECTIONS[2].title} onUnlockClick={() => unlockAndScrollTo(2)}>
-              <Section04_BrotherQuiz onQuizComplete={() => unlockAndScrollTo(3)} />
-            </SectionWrapper>
-
-            {/* Step 3: Roast Wall */}
-            <SectionWrapper idx={3} unlockedMaxIndex={unlockedMaxIndex} id="roast" title={SECTIONS[3].title} onUnlockClick={() => unlockAndScrollTo(3)}>
-              <Section05_RoastWall onNextSection={() => unlockAndScrollTo(4)} />
-            </SectionWrapper>
-
-            {/* Step 4: Tea Incident */}
-            <SectionWrapper idx={4} unlockedMaxIndex={unlockedMaxIndex} id="tea" title={SECTIONS[4].title} onUnlockClick={() => unlockAndScrollTo(4)}>
-              <Section06_TeaIncident onNextSection={() => unlockAndScrollTo(5)} />
-            </SectionWrapper>
-
-            {/* Step 5: Garden Incident */}
-            <SectionWrapper idx={5} unlockedMaxIndex={unlockedMaxIndex} id="garden" title={SECTIONS[5].title} onUnlockClick={() => unlockAndScrollTo(5)}>
-              <Section07_GardenIncident onNextSection={() => unlockAndScrollTo(6)} />
-            </SectionWrapper>
-
-            {/* Step 6: Sister Specs Manifesto */}
-            <SectionWrapper idx={6} unlockedMaxIndex={unlockedMaxIndex} id="sister-stats" title={SECTIONS[6].title} onUnlockClick={() => unlockAndScrollTo(6)}>
-              <Section07B_SisterStats onNextSection={() => unlockAndScrollTo(7)} />
-            </SectionWrapper>
-
-            {/* Step 7: Memory Universe */}
-            <SectionWrapper idx={7} unlockedMaxIndex={unlockedMaxIndex} id="memory" title={SECTIONS[7].title} onUnlockClick={() => unlockAndScrollTo(7)}>
-              <Section08_MemoryUniverse onNextSection={() => unlockAndScrollTo(8)} />
-            </SectionWrapper>
-
-            {/* Step 8: Sister Quiz */}
-            <SectionWrapper idx={8} unlockedMaxIndex={unlockedMaxIndex} id="sister-quiz" title={SECTIONS[8].title} onUnlockClick={() => unlockAndScrollTo(8)}>
-              <Section09_SisterQuiz onQuizComplete={() => unlockAndScrollTo(9)} />
-            </SectionWrapper>
-
-            {/* Step 9: Secret Lock */}
-            <SectionWrapper idx={9} unlockedMaxIndex={unlockedMaxIndex} id="secret-lock" title={SECTIONS[9].title} onUnlockClick={() => unlockAndScrollTo(9)}>
-              <Section10_SecretLock onUnlockFinal={() => unlockAndScrollTo(10)} />
-            </SectionWrapper>
-
-            {/* Step 10: Final Reveal */}
-            <SectionWrapper idx={10} unlockedMaxIndex={unlockedMaxIndex} id="final-reveal" title={SECTIONS[10].title} onUnlockClick={() => unlockAndScrollTo(10)}>
-              <Section11_FinalReveal onProceedToFinale={() => unlockAndScrollTo(11)} />
-            </SectionWrapper>
-
-            {/* Step 11: Grand Finale */}
-            <SectionWrapper idx={11} unlockedMaxIndex={unlockedMaxIndex} id="grand-finale" title={SECTIONS[11].title} onUnlockClick={() => unlockAndScrollTo(11)}>
-              <Section12_GrandFinale onReplay={() => unlockAndScrollTo(0)} />
-            </SectionWrapper>
-
-          </main>
-        </>
-      )}
-    </div>
-  );
-}
-
-// Wrapper for Step-by-Step Progressive Subtle Blur & Clickable Lock System
-function SectionWrapper({ children, idx, unlockedMaxIndex, id, title, onUnlockClick }) {
-  const isUnlocked = idx <= unlockedMaxIndex;
-
-  return (
-    <div
-      id={id}
-      style={{
-        position: 'relative',
-        minHeight: '100vh',
-        width: '100%',
-        zIndex: 2
-      }}
-    >
-      {/* Inner Content (Blurred when locked) */}
-      <div
-        style={{
-          width: '100%',
-          minHeight: '100vh',
-          filter: isUnlocked ? 'none' : 'blur(6px)',
-          opacity: isUnlocked ? 1 : 0.45,
-          pointerEvents: isUnlocked ? 'auto' : 'none',
-          transition: 'filter 0.6s ease, opacity 0.6s ease',
-          userSelect: isUnlocked ? 'auto' : 'none'
-        }}
-      >
-        {children}
-      </div>
-
-      {/* Subtle Clickable Locked Overlay Badge */}
-      {!isUnlocked && (
-        <div
-          onClick={onUnlockClick}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            zIndex: 99,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'rgba(5, 5, 12, 0.45)',
-            backdropFilter: 'blur(3px)',
-            cursor: 'pointer',
-            padding: '20px'
-          }}
-        >
-          <div
-            className="glass-panel-glow"
-            style={{
-              padding: '24px 32px',
-              borderRadius: '24px',
-              textAlign: 'center',
-              border: '1px solid rgba(255, 42, 141, 0.6)',
+              background: 'rgba(15, 10, 30, 0.92)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 42, 141, 0.4)',
               boxShadow: '0 10px 40px rgba(0,0,0,0.85)',
-              maxWidth: '380px',
-              width: '90%',
-              pointerEvents: 'auto'
+              maxWidth: '94vw',
+              width: 'max-content'
             }}
           >
-            <div style={{ background: 'rgba(255, 42, 141, 0.2)', width: '52px', height: '52px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-              <Lock size={26} color="#ff2a8d" />
-            </div>
-            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#fbbf24', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px' }}>
-              LEVEL {idx + 1} LOCKED 🔒
-            </div>
-            <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#ffffff', marginBottom: '14px' }}>
-              {title}
-            </div>
+            {/* Prev Stage Button */}
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onUnlockClick();
-              }}
+              onClick={() => goToStage(currentStageIndex - 1)}
+              disabled={currentStageIndex === 0 || isWarping}
               style={{
-                background: 'linear-gradient(135deg, #ff2a8d 0%, #ff758c 100%)',
-                color: '#fff',
+                background: currentStageIndex === 0 ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.15)',
+                color: currentStageIndex === 0 ? '#475569' : '#ffffff',
                 border: 'none',
-                borderRadius: '30px',
-                padding: '12px 24px',
-                fontSize: '0.9rem',
-                fontWeight: '700',
-                cursor: 'pointer',
+                borderRadius: '20px',
+                padding: '6px 14px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: currentStageIndex === 0 ? 'not-allowed' : 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 20px rgba(255, 42, 141, 0.5)'
+                gap: '4px',
+                flexShrink: 0,
+                transition: 'all 0.2s ease'
               }}
             >
-              <Unlock size={16} />
-              <span>TAP TO UNLOCK LEVEL {idx + 1} ✨</span>
+              <ChevronLeft size={16} />
+              <span>PREV</span>
             </button>
-          </div>
-        </div>
+
+            {/* Scrubber Pills Container */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                overflowX: 'auto',
+                maxWidth: '65vw',
+                scrollbarWidth: 'none',
+                padding: '2px 4px'
+              }}
+            >
+              {SECTIONS.map((sec, idx) => {
+                const isActive = currentStageIndex === idx;
+                const isUnlocked = idx <= completedMaxIndex;
+
+                return (
+                  <button
+                    key={sec.id}
+                    onClick={() => goToStage(idx)}
+                    title={sec.title}
+                    style={{
+                      background: isActive
+                        ? 'linear-gradient(135deg, #ff2a8d 0%, #ff758c 100%)'
+                        : isUnlocked
+                        ? 'rgba(255, 255, 255, 0.15)'
+                        : 'rgba(255, 255, 255, 0.05)',
+                      color: isActive ? '#ffffff' : isUnlocked ? '#e2e8f0' : '#64748b',
+                      border: isActive ? '1px solid #ff758c' : '1px solid rgba(255, 255, 255, 0.15)',
+                      borderRadius: '20px',
+                      padding: '5px 10px',
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.3s ease',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      flexShrink: 0
+                    }}
+                  >
+                    <span>{sec.label}</span>
+                    {!isUnlocked && <Lock size={11} color="#fbbf24" />}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Next Stage Button */}
+            <button
+              onClick={() => goToStage(currentStageIndex + 1)}
+              disabled={currentStageIndex === SECTIONS.length - 1 || isWarping}
+              style={{
+                background: currentStageIndex === SECTIONS.length - 1
+                  ? 'rgba(255, 255, 255, 0.05)'
+                  : 'linear-gradient(135deg, #ff2a8d 0%, #ff758c 100%)',
+                color: currentStageIndex === SECTIONS.length - 1 ? '#475569' : '#ffffff',
+                border: 'none',
+                borderRadius: '20px',
+                padding: '6px 14px',
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                cursor: currentStageIndex === SECTIONS.length - 1 ? 'not-allowed' : 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                flexShrink: 0,
+                transition: 'all 0.2s ease',
+                boxShadow: currentStageIndex === SECTIONS.length - 1 ? 'none' : '0 4px 15px rgba(255, 42, 141, 0.4)'
+              }}
+            >
+              <span>NEXT</span>
+              <ChevronRight size={16} />
+            </button>
+          </nav>
+        </>
       )}
     </div>
   );
