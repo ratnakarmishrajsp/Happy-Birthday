@@ -94,6 +94,28 @@ export default function CountdownLockGate({ onUnlock }) {
     }, 1600);
   };
 
+  const [tapSparks, setTapSparks] = useState([]);
+
+  const handleScreenTap = (e) => {
+    // Avoid triggering when clicking interactive buttons or modal
+    if (e.target.closest('button') || e.target.closest('form') || showKeyModal) return;
+
+    soundEngine.playPop();
+    triggerHeartConfetti();
+
+    const newSpark = {
+      id: Date.now() + Math.random(),
+      x: e.clientX,
+      y: e.clientY
+    };
+
+    setTapSparks((prev) => [...prev.slice(-6), newSpark]);
+
+    setTimeout(() => {
+      setTapSparks((prev) => prev.filter((s) => s.id !== newSpark.id));
+    }, 1000);
+  };
+
   const handlePasscodeSubmit = (e) => {
     e.preventDefault();
     if (passcode.trim() === '0830' || passcode.trim().toLowerCase() === 'ratnakar') {
@@ -108,6 +130,7 @@ export default function CountdownLockGate({ onUnlock }) {
 
   return (
     <div
+      onClick={handleScreenTap}
       style={{
         position: 'fixed',
         inset: 0,
@@ -119,9 +142,33 @@ export default function CountdownLockGate({ onUnlock }) {
         justifyContent: 'center',
         padding: '16px',
         overflow: 'hidden',
-        perspective: '1200px'
+        perspective: '1200px',
+        cursor: 'pointer'
       }}
     >
+      {/* Tap Firework Sparkles Overlay */}
+      {tapSparks.map((spark) => (
+        <motion.div
+          key={spark.id}
+          initial={{ opacity: 1, scale: 0.2 }}
+          animate={{ opacity: 0, scale: 2.2, y: -40 }}
+          transition={{ duration: 0.8 }}
+          style={{
+            position: 'fixed',
+            left: spark.x - 20,
+            top: spark.y - 20,
+            width: '40px',
+            height: '40px',
+            pointerEvents: 'none',
+            zIndex: 999999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <Sparkles size={36} color="#fbbf24" style={{ filter: 'drop-shadow(0 0 10px #ff2a8d)' }} />
+        </motion.div>
+      ))}
       {/* Background Radial Glows */}
       <div
         style={{
