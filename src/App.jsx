@@ -5,6 +5,7 @@ import { Sparkles, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
 import Background3D from './canvas/Background3D';
 import CosmicWarpOverlay from './canvas/CosmicWarpOverlay';
 import AudioController from './components/AudioController';
+import CountdownLockGate from './components/CountdownLockGate';
 
 import Section01_Loading from './components/Section01_Loading';
 import Section02_Hero from './components/Section02_Hero';
@@ -39,6 +40,10 @@ const SECTIONS = [
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isGateUnlocked, setIsGateUnlocked] = useState(() => {
+    const target = new Date('2026-08-30T00:00:00+05:30').getTime();
+    return new Date().getTime() >= target;
+  });
   const [currentStageIndex, setCurrentStageIndex] = useState(0);
   const [completedMaxIndex, setCompletedMaxIndex] = useState(0);
   const [isWarping, setIsWarping] = useState(false);
@@ -95,6 +100,11 @@ export default function App() {
   };
 
   const progressPercent = Math.round(((currentStageIndex + 1) / SECTIONS.length) * 100);
+
+  // If before 30 August 2026 Midnight and not bypassed, render Countdown Gate
+  if (!isGateUnlocked) {
+    return <CountdownLockGate onUnlock={() => setIsGateUnlocked(true)} />;
+  }
 
   return (
     <div style={{ position: 'relative', minHeight: '100vh', width: '100vw', overflowX: 'hidden', backgroundColor: '#070712' }}>
