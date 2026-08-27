@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
 
+import StudioHeader from './lifnora/studio/StudioHeader';
+import Birthday02Master from './lifnora/templates/birthday-02/Birthday02Master';
+import { DEFAULT_TEMPLATE_CONFIG } from './lifnora/config/templateSchema';
+
 import Background3D from './canvas/Background3D';
 import CosmicWarpOverlay from './canvas/CosmicWarpOverlay';
 import AudioController from './components/AudioController';
@@ -39,6 +43,9 @@ const SECTIONS = [
 ];
 
 export default function App() {
+  const [activeTemplate, setActiveTemplate] = useState('birthday-02');
+  const [activeTier, setActiveTier] = useState('ultimate-1499');
+
   const [isLoading, setIsLoading] = useState(true);
   const [isGateUnlocked, setIsGateUnlocked] = useState(() => {
     const target = new Date('2026-08-30T00:00:00+05:30').getTime();
@@ -101,133 +108,37 @@ export default function App() {
 
   const progressPercent = Math.round(((currentStageIndex + 1) / SECTIONS.length) * 100);
 
-  // If before 30 August 2026 Midnight and not bypassed, render Countdown Gate
-  if (!isGateUnlocked) {
-    return <CountdownLockGate onUnlock={() => setIsGateUnlocked(true)} />;
-  }
-
   return (
     <div style={{ position: 'relative', minHeight: '100vh', width: '100vw', overflowX: 'hidden', backgroundColor: '#070712' }}>
-      {/* 3D Cosmic Ambient Background */}
-      <Background3D />
+      {/* Lifnora Template Studio Header Switcher */}
+      <StudioHeader
+        activeTemplate={activeTemplate}
+        onChangeTemplate={setActiveTemplate}
+        activeTier={activeTier}
+        onChangeTier={setActiveTier}
+      />
 
-      {/* Cosmic Warp / Particle Blast Overlay */}
-      <CosmicWarpOverlay isWarping={isWarping} nextStageTitle={warpTargetTitle} />
-
-      {/* Audio Controller (Music BGM Track Selector & Sound Effects) */}
+      {/* Audio Controller */}
       <AudioController />
 
-      {/* Loading Screen */}
-      {isLoading ? (
-        <Section01_Loading onComplete={() => setIsLoading(false)} />
+      {activeTemplate === 'birthday-02' ? (
+        <Birthday02Master config={DEFAULT_TEMPLATE_CONFIG} packageTier={activeTier} />
       ) : (
         <>
-          {/* Bottom Stage Navigation Footer */}
-          <footer
-            style={{
-              position: 'fixed',
-              bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 9998,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '12px',
-              padding: '10px 18px',
-              width: '92%',
-              maxWidth: '850px',
-              borderRadius: '30px',
-              background: 'rgba(15, 10, 30, 0.92)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 42, 141, 0.4)',
-              boxShadow: '0 -8px 32px rgba(0, 0, 0, 0.85)'
-            }}
-          >
-            {/* Back Button */}
-            {currentStageIndex > 0 ? (
-              <button
-                onClick={() => goToStage(currentStageIndex - 1)}
-                disabled={isWarping}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.12)',
-                  color: '#ffffff',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderRadius: '20px',
-                  padding: '6px 14px',
-                  fontSize: '0.8rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                <ChevronLeft size={16} />
-                <span>BACK</span>
-              </button>
-            ) : (
-              <div style={{ width: '70px' }} />
-            )}
+          {/* 3D Cosmic Ambient Background */}
+          <Background3D />
 
-            {/* Title / Stage Indicator */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'center' }}>
-              <span style={{ fontSize: '1.1rem' }}>👑</span>
-              <div>
-                <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#fbbf24', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                  STAGE {currentStageIndex + 1} OF 12
-                </div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#ffffff' }}>
-                  {SECTIONS[currentStageIndex].title}
-                </div>
-              </div>
+          {/* Cosmic Warp / Particle Blast Overlay */}
+          <CosmicWarpOverlay isWarping={isWarping} nextStageTitle={warpTargetTitle} />
+
+          {/* If before 30 August 2026 Midnight and not bypassed, render Countdown Gate */}
+          {!isGateUnlocked ? (
+            <CountdownLockGate onUnlock={() => setIsGateUnlocked(true)} />
+          ) : (
+            <div style={{ paddingTop: '50px' }}>
+              {renderActiveSection()}
             </div>
-
-            {/* Stage Progress Bar & Counter */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '80px', height: '6px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '10px', overflow: 'hidden' }}>
-                <motion.div
-                  animate={{ width: `${progressPercent}%` }}
-                  transition={{ duration: 0.4 }}
-                  style={{
-                    height: '100%',
-                    background: 'linear-gradient(90deg, #ff2a8d 0%, #fbbf24 100%)',
-                    borderRadius: '10px'
-                  }}
-                />
-              </div>
-              <div
-                style={{
-                  background: 'rgba(255, 42, 141, 0.2)',
-                  border: '1px solid rgba(255, 42, 141, 0.5)',
-                  color: '#ff758c',
-                  padding: '3px 10px',
-                  borderRadius: '14px',
-                  fontSize: '0.75rem',
-                  fontWeight: 800
-                }}
-              >
-                {progressPercent}%
-              </div>
-            </div>
-          </footer>
-
-          {/* Main Stage View Container (Single Active Screen Architecture) */}
-          <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', width: '100%', paddingTop: '60px', paddingBottom: '90px' }}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStageIndex}
-                initial={{ opacity: 0, scale: 0.94, y: 25 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 1.05, y: -25 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-                style={{ width: '100%', minHeight: 'calc(100vh - 150px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}
-              >
-                {renderActiveSection()}
-              </motion.div>
-            </AnimatePresence>
-          </main>
+          )}
         </>
       )}
     </div>
