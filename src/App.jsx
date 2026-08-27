@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Sparkles, Unlock } from 'lucide-react';
+import { Lock, Unlock } from 'lucide-react';
 import Background3D from './canvas/Background3D';
 import AudioController from './components/AudioController';
 
@@ -36,33 +36,37 @@ const SECTIONS = [
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [unlockedMaxIndex, setUnlockedMaxIndex] = useState(SECTIONS.length - 1);
   const [activeSectionId, setActiveSectionId] = useState('hero');
+  const [unlockedMaxIndex, setUnlockedMaxIndex] = useState(0);
 
-  const unlockAndScrollTo = (targetIndex) => {
-    soundEngine.playUnlock();
-    setUnlockedMaxIndex(prev => Math.max(prev, targetIndex));
-    
-    setTimeout(() => {
-      const elem = document.getElementById(SECTIONS[targetIndex].id);
-      if (elem) {
-        const topPos = elem.getBoundingClientRect().top + window.pageYOffset - 10;
-        window.scrollTo({ top: topPos, behavior: 'smooth' });
-      }
-    }, 150);
+  const unlockAndScrollTo = (index) => {
+    soundEngine.playClick();
+    if (index > unlockedMaxIndex) {
+      setUnlockedMaxIndex(index);
+    }
+    const sectionId = SECTIONS[index]?.id;
+    if (sectionId) {
+      setTimeout(() => {
+        const elem = document.getElementById(sectionId);
+        if (elem) {
+          const topPos = elem.getBoundingClientRect().top + window.pageYOffset - 10;
+          window.scrollTo({ top: topPos, behavior: 'smooth' });
+        }
+      }, 50);
+    }
   };
 
-  const scrollToSection = (id, idx) => {
-    soundEngine.playUnlock();
-    setUnlockedMaxIndex(prev => Math.max(prev, idx));
-    
-    setTimeout(() => {
-      const elem = document.getElementById(id);
-      if (elem) {
-        const topPos = elem.getBoundingClientRect().top + window.pageYOffset - 10;
-        window.scrollTo({ top: topPos, behavior: 'smooth' });
-      }
-    }, 100);
+  const scrollToSection = (id) => {
+    soundEngine.playClick();
+    const idx = SECTIONS.findIndex((s) => s.id === id);
+    if (idx !== -1 && idx > unlockedMaxIndex) {
+      setUnlockedMaxIndex(idx);
+    }
+    const elem = document.getElementById(id);
+    if (elem) {
+      const topPos = elem.getBoundingClientRect().top + window.pageYOffset - 10;
+      window.scrollTo({ top: topPos, behavior: 'smooth' });
+    }
   };
 
   useEffect(() => {
@@ -74,7 +78,6 @@ export default function App() {
         const elem = document.getElementById(SECTIONS[i].id);
         if (elem && elem.offsetTop <= scrollPos) {
           setActiveSectionId(SECTIONS[i].id);
-          setUnlockedMaxIndex(prev => Math.max(prev, i));
           break;
         }
       }
@@ -118,51 +121,25 @@ export default function App() {
               overflowX: 'auto'
             }}
           >
-            <button
-              onClick={() => {
-                soundEngine.playUnlock();
-                setUnlockedMaxIndex(SECTIONS.length - 1);
-              }}
-              style={{
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '20px',
-                padding: '5px 12px',
-                fontSize: '0.72rem',
-                fontWeight: '800',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                boxShadow: '0 0 12px rgba(16, 185, 129, 0.5)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-                marginRight: '4px'
-              }}
-            >
-              <Unlock size={11} />
-              <span>UNLOCK ALL 🔓</span>
-            </button>
-
             {SECTIONS.map((sec, idx) => {
-              const isUnlocked = idx <= unlockedMaxIndex;
               const isActive = activeSectionId === sec.id;
+              const isUnlocked = idx <= unlockedMaxIndex;
 
               return (
                 <button
                   key={sec.id}
-                  onClick={() => scrollToSection(sec.id, idx)}
+                  onClick={() => unlockAndScrollTo(idx)}
                   style={{
                     background: isActive
                       ? 'linear-gradient(135deg, #ff2a8d 0%, #ff758c 100%)'
                       : isUnlocked
                       ? 'rgba(255, 255, 255, 0.12)'
                       : 'rgba(255, 255, 255, 0.05)',
-                    color: isActive ? '#ffffff' : isUnlocked ? '#e2e8f0' : '#94a3b8',
-                    border: isActive ? '1px solid #ff758c' : '1px solid rgba(255, 255, 255, 0.1)',
+                    color: isActive ? '#ffffff' : isUnlocked ? '#e2e8f0' : '#64748b',
+                    border: isActive ? '1px solid #ff758c' : '1px solid rgba(255, 255, 255, 0.15)',
                     borderRadius: '20px',
-                    padding: '5px 11px',
-                    fontSize: '0.72rem',
+                    padding: '5px 12px',
+                    fontSize: '0.75rem',
                     fontWeight: '700',
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
@@ -170,23 +147,23 @@ export default function App() {
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '4px',
-                    opacity: 1
+                    opacity: isUnlocked ? 1 : 0.7
                   }}
                 >
                   <span>{sec.label}</span>
-                  {!isUnlocked && <Lock size={10} color="#fbbf24" />}
+                  {!isUnlocked && <Lock size={12} color="#fbbf24" />}
                 </button>
               );
             })}
           </nav>
 
-          {/* Main Continuous Progressive Scroll Content */}
+          {/* Main Continuous Vertical Scroll Content - Step-by-step progressive unlock */}
           <main style={{ position: 'relative', zIndex: 1, width: '100%' }}>
             
             {/* Step 0: Hero */}
-            <div id="hero" style={{ position: 'relative' }}>
+            <SectionWrapper idx={0} unlockedMaxIndex={unlockedMaxIndex} id="hero" title={SECTIONS[0].title} onUnlockClick={() => unlockAndScrollTo(0)}>
               <Section02_Hero onStartSurprise={() => unlockAndScrollTo(1)} />
-            </div>
+            </SectionWrapper>
 
             {/* Step 1: Verification */}
             <SectionWrapper idx={1} unlockedMaxIndex={unlockedMaxIndex} id="verification" title={SECTIONS[1].title} onUnlockClick={() => unlockAndScrollTo(1)}>
