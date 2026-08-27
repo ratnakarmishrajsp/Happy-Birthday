@@ -1,16 +1,64 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Crown, Lock, Key, Sparkles, Heart, ShieldCheck, Zap, X } from 'lucide-react';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Float, OrbitControls, Sparkles as ThreeSparkles } from '@react-three/drei';
+import * as THREE from 'three';
+import { Lock, Key, Sparkles, ShieldCheck, Zap, X, Disc } from 'lucide-react';
 import { soundEngine } from '../utils/soundEngine';
 import { triggerConfetti, triggerHeartConfetti } from '../utils/confetti';
 
 const TEASING_MESSAGES = [
-  "Nice try Sadhivaaa! 😜 Surprise unlocks strictly at 30th Aug 12:00 AM Midnight!",
-  "Patience Dino Boss! 🦖 Counting down to your big moment!",
-  "Pagal + Badmash + Sadhivaaa = Surprise loading... ⏳",
+  "Nice try Sadhivaaa! 🌌 Cosmic Vault unlocks strictly at 30th Aug 12:00 AM Midnight!",
+  "Patience Dino Boss! 🦖 Cosmic engines are aligning for 30th August!",
+  "Pagal + Badmash + Sadhivaaa = Space Vault unlocking... ⏳",
   "No sneaking allowed! 🔒 Wait for 30 August Midnight!",
-  "Ratnakar locked this vault with super-secret brother magic! ✨"
+  "Ratnakar locked this vault with super-secret cosmic brother magic! ✨"
 ];
+
+// 3D Rotating Metallic Vault Core Component
+function Vault3DCore() {
+  const outerRingRef = useRef();
+  const innerRingRef = useRef();
+  const coreRef = useRef();
+
+  useFrame((state, delta) => {
+    if (outerRingRef.current) outerRingRef.current.rotation.z += delta * 0.4;
+    if (innerRingRef.current) innerRingRef.current.rotation.z -= delta * 0.6;
+    if (coreRef.current) coreRef.current.rotation.y += delta * 0.5;
+  });
+
+  return (
+    <group scale={[1.4, 1.4, 1.4]}>
+      {/* Central Glowing Core */}
+      <mesh ref={coreRef}>
+        <sphereGeometry args={[0.7, 32, 32]} />
+        <meshStandardMaterial
+          color="#ff2a8d"
+          emissive="#ff2a8d"
+          emissiveIntensity={1.2}
+          roughness={0.1}
+          metalness={0.8}
+        />
+      </mesh>
+
+      {/* Outer Metallic Ring */}
+      <mesh ref={outerRingRef} rotation={[Math.PI / 3, 0, 0]}>
+        <torusGeometry args={[1.2, 0.06, 16, 100]} />
+        <meshStandardMaterial color="#fbbf24" emissive="#fbbf24" emissiveIntensity={0.6} metalness={0.9} roughness={0.1} />
+      </mesh>
+
+      {/* Inner Rotating Ring */}
+      <mesh ref={innerRingRef} rotation={[-Math.PI / 4, Math.PI / 6, 0]}>
+        <torusGeometry args={[0.95, 0.04, 16, 100]} />
+        <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={0.8} metalness={0.9} roughness={0.1} />
+      </mesh>
+
+      {/* Point Lights */}
+      <pointLight position={[0, 0, 2]} intensity={3} color="#ff2a8d" />
+      <pointLight position={[0, 0, -2]} intensity={2} color="#fbbf24" />
+    </group>
+  );
+}
 
 export default function CountdownLockGate({ onUnlock }) {
   const targetTime = new Date('2026-08-30T00:00:00+05:30').getTime();
@@ -57,7 +105,7 @@ export default function CountdownLockGate({ onUnlock }) {
     return () => clearInterval(timer);
   }, [onUnlock]);
 
-  const handlePokeLock = () => {
+  const handlePokeVault = () => {
     soundEngine.playPop();
     const randomMsg = TEASING_MESSAGES[Math.floor(Math.random() * TEASING_MESSAGES.length)];
     setToastMessage(randomMsg);
@@ -86,7 +134,7 @@ export default function CountdownLockGate({ onUnlock }) {
         position: 'fixed',
         inset: 0,
         zIndex: 99999,
-        backgroundColor: '#070712',
+        backgroundColor: '#050512',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -95,80 +143,47 @@ export default function CountdownLockGate({ onUnlock }) {
         overflow: 'hidden'
       }}
     >
-      {/* Ambient Radial Background Glows */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '20%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '500px',
-          height: '500px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255, 42, 141, 0.25) 0%, rgba(157, 78, 221, 0) 70%)',
-          pointerEvents: 'none',
-          filter: 'blur(40px)'
-        }}
-      />
+      {/* 3D Cosmic Space Background with Rotating Rings & Particles */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
+        <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+          <ambientLight intensity={0.6} />
+          <pointLight position={[10, 10, 10]} intensity={1.5} color="#ff2a8d" />
+          <pointLight position={[-10, -10, -5]} intensity={1.2} color="#fbbf24" />
 
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '10%',
-          right: '10%',
-          width: '400px',
-          height: '400px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, rgba(157, 78, 221, 0) 70%)',
-          pointerEvents: 'none',
-          filter: 'blur(50px)'
-        }}
-      />
+          <ThreeSparkles count={150} scale={10} size={2.5} speed={0.4} color="#ff758c" />
 
-      {/* Main Glassmorphic Royal Card */}
+          <Float speed={2} rotationIntensity={0.3} floatIntensity={0.5}>
+            <Vault3DCore />
+          </Float>
+        </Canvas>
+      </div>
+
+      {/* Main Glassmorphic Cosmic Card */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 30 }}
+        initial={{ opacity: 0, scale: 0.88, y: 30 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="glass-panel-glow"
         style={{
           width: '100%',
           maxWidth: '680px',
-          padding: '40px 28px',
+          padding: '36px 28px',
           borderRadius: '32px',
           textAlign: 'center',
-          border: '1px solid rgba(251, 191, 36, 0.4)',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.9)',
+          border: '1px solid rgba(255, 42, 141, 0.45)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.95)',
           position: 'relative',
-          backdropFilter: 'blur(20px)',
-          background: 'rgba(15, 10, 30, 0.88)'
+          zIndex: 1,
+          backdropFilter: 'blur(22px)',
+          background: 'rgba(10, 8, 25, 0.86)'
         }}
       >
-        {/* Top Floating Crown Icon */}
-        <motion.div
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          onClick={handlePokeLock}
-          style={{
-            display: 'inline-flex',
-            padding: '20px',
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(255, 42, 141, 0.25) 100%)',
-            border: '2px solid rgba(251, 191, 36, 0.6)',
-            boxShadow: '0 0 30px rgba(251, 191, 36, 0.5)',
-            marginBottom: '20px',
-            cursor: 'pointer'
-          }}
-        >
-          <Crown size={54} color="#fbbf24" className="animate-pulse" />
-        </motion.div>
-
         {/* Header Tag */}
-        <div>
+        <div style={{ marginBottom: '16px' }}>
           <span
             style={{
-              background: 'rgba(255, 42, 141, 0.18)',
-              border: '1px solid rgba(255, 42, 141, 0.4)',
+              background: 'rgba(255, 42, 141, 0.2)',
+              border: '1px solid rgba(255, 42, 141, 0.5)',
               color: '#ff758c',
               padding: '6px 18px',
               borderRadius: '20px',
@@ -181,15 +196,15 @@ export default function CountdownLockGate({ onUnlock }) {
               gap: '6px'
             }}
           >
-            <Sparkles size={14} color="#fbbf24" /> QUEEN'S BIRTHDAY VAULT 👑
+            <Sparkles size={14} color="#fbbf24" /> THE COSMIC VAULT GATE 🌌
           </span>
         </div>
 
         <h1
           className="font-title gradient-text-magic"
           style={{
-            fontSize: 'clamp(2rem, 5vw, 3.2rem)',
-            marginTop: '16px',
+            fontSize: 'clamp(2.2rem, 5vw, 3.5rem)',
+            marginTop: '8px',
             marginBottom: '8px',
             lineHeight: '1.2'
           }}
@@ -197,8 +212,8 @@ export default function CountdownLockGate({ onUnlock }) {
           Anshika Didi's Surprise
         </h1>
 
-        <p style={{ color: '#cbd5e1', fontSize: '1rem', marginBottom: '28px', maxWidth: '500px', margin: '0 auto 28px' }}>
-          This 3D surprise experience is locked and will automatically reveal on <span style={{ color: '#fbbf24', fontWeight: '800' }}>30 August 2026 at Midnight 12:00 AM IST</span>.
+        <p style={{ color: '#cbd5e1', fontSize: '0.95rem', marginBottom: '26px', maxWidth: '520px', margin: '0 auto 26px' }}>
+          The 3D Cosmic Vault is locked. It will automatically unlock and blast open on <span style={{ color: '#fbbf24', fontWeight: '800' }}>30 August 2026 at Midnight 12:00 AM IST</span>.
         </p>
 
         {/* Live Countdown Cards Grid */}
@@ -211,30 +226,30 @@ export default function CountdownLockGate({ onUnlock }) {
           }}
         >
           {[
-            { label: 'DAYS', value: timeLeft.days },
-            { label: 'HOURS', value: timeLeft.hours },
-            { label: 'MINUTES', value: timeLeft.minutes },
-            { label: 'SECONDS', value: timeLeft.seconds }
+            { label: 'DAYS', value: timeLeft.days, color: '#ff2a8d' },
+            { label: 'HOURS', value: timeLeft.hours, color: '#a855f7' },
+            { label: 'MINUTES', value: timeLeft.minutes, color: '#38bdf8' },
+            { label: 'SECONDS', value: timeLeft.seconds, color: '#fbbf24' }
           ].map((item, idx) => (
             <motion.div
               key={idx}
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.06 }}
               style={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 42, 141, 0.3)',
+                background: 'rgba(20, 15, 45, 0.75)',
+                border: `1px solid ${item.color}66`,
                 borderRadius: '20px',
                 padding: '16px 8px',
                 textAlign: 'center',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)'
+                boxShadow: `0 8px 24px ${item.color}33`
               }}
             >
               <div
                 className="font-title"
                 style={{
-                  fontSize: 'clamp(1.6rem, 4vw, 2.5rem)',
+                  fontSize: 'clamp(1.6rem, 4vw, 2.6rem)',
                   fontWeight: 900,
-                  color: idx === 3 ? '#ff2a8d' : '#fbbf24',
-                  textShadow: '0 0 15px rgba(255, 42, 141, 0.4)'
+                  color: item.color,
+                  textShadow: `0 0 18px ${item.color}aa`
                 }}
               >
                 {String(item.value).padStart(2, '0')}
@@ -281,12 +296,12 @@ export default function CountdownLockGate({ onUnlock }) {
         {/* Action Buttons */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
           <button
-            onClick={handlePokeLock}
+            onClick={handlePokeVault}
             className="glass-panel"
             style={{
-              background: 'rgba(255, 255, 255, 0.08)',
+              background: 'rgba(255, 42, 141, 0.15)',
               color: '#ffffff',
-              borderColor: 'rgba(255, 255, 255, 0.2)',
+              borderColor: 'rgba(255, 42, 141, 0.4)',
               borderRadius: '24px',
               padding: '10px 20px',
               fontSize: '0.85rem',
@@ -307,8 +322,8 @@ export default function CountdownLockGate({ onUnlock }) {
               setShowKeyModal(true);
             }}
             style={{
-              background: 'rgba(157, 78, 221, 0.25)',
-              border: '1px solid rgba(157, 78, 221, 0.6)',
+              background: 'rgba(251, 191, 36, 0.2)',
+              border: '1px solid rgba(251, 191, 36, 0.6)',
               color: '#fbbf24',
               borderRadius: '24px',
               padding: '10px 20px',
@@ -338,8 +353,8 @@ export default function CountdownLockGate({ onUnlock }) {
               position: 'fixed',
               inset: 0,
               zIndex: 999999,
-              background: 'rgba(5, 5, 15, 0.85)',
-              backdropFilter: 'blur(16px)',
+              background: 'rgba(5, 5, 15, 0.88)',
+              backdropFilter: 'blur(18px)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
