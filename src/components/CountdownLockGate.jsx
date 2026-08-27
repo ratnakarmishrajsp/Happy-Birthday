@@ -1,62 +1,40 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, OrbitControls, Sparkles as ThreeSparkles } from '@react-three/drei';
+import { Float, Sparkles as ThreeSparkles } from '@react-three/drei';
 import * as THREE from 'three';
-import { Lock, Key, Sparkles, ShieldCheck, Zap, X, Disc } from 'lucide-react';
+import { Key, Lock, Sparkles, ShieldCheck, Zap, X, RotateCcw } from 'lucide-react';
 import { soundEngine } from '../utils/soundEngine';
 import { triggerConfetti, triggerHeartConfetti } from '../utils/confetti';
 
-const TEASING_MESSAGES = [
-  "Nice try Sadhivaaa! 🌌 Cosmic Vault unlocks strictly at 30th Aug 12:00 AM Midnight!",
-  "Patience Dino Boss! 🦖 Cosmic engines are aligning for 30th August!",
-  "Pagal + Badmash + Sadhivaaa = Space Vault unlocking... ⏳",
-  "No sneaking allowed! 🔒 Wait for 30 August Midnight!",
-  "Ratnakar locked this vault with super-secret cosmic brother magic! ✨"
+const TEASING_ATTEMPTS = [
+  {
+    msg: "Nice try Sadhivaaa! 😜 The Royal Gate is sealed with 256-bit Brother Security until 30th Aug Midnight!",
+    btn: "TRY AGAIN 🔄 (Attempt 1/4)"
+  },
+  {
+    msg: "Patience Dino Boss! 🦖 The Gate engine is charging for 30th August 12:00 AM Midnight!",
+    btn: "TRY AGAIN 🔄 (Attempt 2/4)"
+  },
+  {
+    msg: "Pagal + Badmash + Sadhivaaa = Access Denied! Treat for Brother required for instant unlock! 😂",
+    btn: "TRY AGAIN 🔄 (Attempt 3/4)"
+  },
+  {
+    msg: "Vault Lockdown! 🛑 This Golden Gate ONLY opens when clock hits ZERO on 30 Aug Midnight!",
+    btn: "TRY AGAIN 🔄 (Attempt 4/4)"
+  }
 ];
 
-// 3D Rotating Metallic Vault Core Component
-function Vault3DCore() {
-  const outerRingRef = useRef();
-  const innerRingRef = useRef();
-  const coreRef = useRef();
-
-  useFrame((state, delta) => {
-    if (outerRingRef.current) outerRingRef.current.rotation.z += delta * 0.4;
-    if (innerRingRef.current) innerRingRef.current.rotation.z -= delta * 0.6;
-    if (coreRef.current) coreRef.current.rotation.y += delta * 0.5;
-  });
-
+// 3D Floating Particles & Stars Background
+function CosmicGateBackground() {
   return (
-    <group scale={[1.4, 1.4, 1.4]}>
-      {/* Central Glowing Core */}
-      <mesh ref={coreRef}>
-        <sphereGeometry args={[0.7, 32, 32]} />
-        <meshStandardMaterial
-          color="#ff2a8d"
-          emissive="#ff2a8d"
-          emissiveIntensity={1.2}
-          roughness={0.1}
-          metalness={0.8}
-        />
-      </mesh>
-
-      {/* Outer Metallic Ring */}
-      <mesh ref={outerRingRef} rotation={[Math.PI / 3, 0, 0]}>
-        <torusGeometry args={[1.2, 0.06, 16, 100]} />
-        <meshStandardMaterial color="#fbbf24" emissive="#fbbf24" emissiveIntensity={0.6} metalness={0.9} roughness={0.1} />
-      </mesh>
-
-      {/* Inner Rotating Ring */}
-      <mesh ref={innerRingRef} rotation={[-Math.PI / 4, Math.PI / 6, 0]}>
-        <torusGeometry args={[0.95, 0.04, 16, 100]} />
-        <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={0.8} metalness={0.9} roughness={0.1} />
-      </mesh>
-
-      {/* Point Lights */}
-      <pointLight position={[0, 0, 2]} intensity={3} color="#ff2a8d" />
-      <pointLight position={[0, 0, -2]} intensity={2} color="#fbbf24" />
-    </group>
+    <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+      <ambientLight intensity={0.5} />
+      <pointLight position={[10, 10, 10]} intensity={1.5} color="#fbbf24" />
+      <pointLight position={[-10, -10, -5]} intensity={1.2} color="#ff2a8d" />
+      <ThreeSparkles count={180} scale={12} size={3} speed={0.4} color="#fbbf24" />
+    </Canvas>
   );
 }
 
@@ -64,10 +42,13 @@ export default function CountdownLockGate({ onUnlock }) {
   const targetTime = new Date('2026-08-30T00:00:00+05:30').getTime();
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-  const [toastMessage, setToastMessage] = useState(null);
+  const [attemptCount, setAttemptCount] = useState(0);
+  const [isKeyAnimating, setIsKeyAnimating] = useState(false);
+  const [activeMessage, setActiveMessage] = useState(null);
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [passcode, setPasscode] = useState('');
   const [passError, setPassError] = useState(false);
+  const [isGateOpening, setIsGateOpening] = useState(false);
 
   function calculateTimeLeft() {
     const now = new Date().getTime();
@@ -91,36 +72,49 @@ export default function CountdownLockGate({ onUnlock }) {
       const updated = calculateTimeLeft();
       setTimeLeft(updated);
 
-      if (updated.isReached) {
+      if (updated.isReached && !isGateOpening) {
         clearInterval(timer);
-        triggerConfetti(4000);
-        triggerHeartConfetti();
-        soundEngine.playSuccess();
-        setTimeout(() => {
-          onUnlock();
-        }, 1500);
+        triggerGateOpenSequence();
       }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [onUnlock]);
+  }, [isGateOpening]);
 
-  const handlePokeVault = () => {
-    soundEngine.playPop();
-    const randomMsg = TEASING_MESSAGES[Math.floor(Math.random() * TEASING_MESSAGES.length)];
-    setToastMessage(randomMsg);
+  const triggerGateOpenSequence = () => {
+    setIsGateOpening(true);
+    soundEngine.playSuccess();
+    triggerConfetti(4000);
+    triggerHeartConfetti();
+
     setTimeout(() => {
-      setToastMessage(null);
-    }, 3500);
+      onUnlock();
+    }, 2200);
+  };
+
+  const handleKeyClick = () => {
+    if (isKeyAnimating || isGateOpening) return;
+
+    soundEngine.playPop();
+    setIsKeyAnimating(true);
+    setActiveMessage(null);
+
+    // Simulate key insertion & failed lock turn sequence
+    setTimeout(() => {
+      soundEngine.playError();
+      setIsKeyAnimating(false);
+
+      const currentAttempt = TEASING_ATTEMPTS[attemptCount % TEASING_ATTEMPTS.length];
+      setActiveMessage(currentAttempt.msg);
+      setAttemptCount((prev) => prev + 1);
+    }, 1600);
   };
 
   const handlePasscodeSubmit = (e) => {
     e.preventDefault();
     if (passcode.trim() === '0830' || passcode.trim().toLowerCase() === 'ratnakar') {
-      soundEngine.playSuccess();
-      triggerConfetti(3000);
       setShowKeyModal(false);
-      onUnlock();
+      triggerGateOpenSequence();
     } else {
       soundEngine.playError();
       setPassError(true);
@@ -134,212 +128,295 @@ export default function CountdownLockGate({ onUnlock }) {
         position: 'fixed',
         inset: 0,
         zIndex: 99999,
-        backgroundColor: '#050512',
+        backgroundColor: '#05040d',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '24px',
-        overflow: 'hidden'
+        padding: '20px',
+        overflow: 'hidden',
+        perspective: '1200px'
       }}
     >
-      {/* 3D Cosmic Space Background with Rotating Rings & Particles */}
+      {/* 3D Background */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
-        <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
-          <ambientLight intensity={0.6} />
-          <pointLight position={[10, 10, 10]} intensity={1.5} color="#ff2a8d" />
-          <pointLight position={[-10, -10, -5]} intensity={1.2} color="#fbbf24" />
-
-          <ThreeSparkles count={150} scale={10} size={2.5} speed={0.4} color="#ff758c" />
-
-          <Float speed={2} rotationIntensity={0.3} floatIntensity={0.5}>
-            <Vault3DCore />
-          </Float>
-        </Canvas>
+        <CosmicGateBackground />
       </div>
 
-      {/* Main Glassmorphic Cosmic Card */}
+      {/* Top Countdown Header Bar */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.88, y: 30 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="glass-panel-glow"
+        initial={{ y: -30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6 }}
         style={{
-          width: '100%',
-          maxWidth: '680px',
-          padding: '36px 28px',
-          borderRadius: '32px',
-          textAlign: 'center',
-          border: '1px solid rgba(255, 42, 141, 0.45)',
-          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.95)',
           position: 'relative',
-          zIndex: 1,
-          backdropFilter: 'blur(22px)',
-          background: 'rgba(10, 8, 25, 0.86)'
+          zIndex: 10,
+          marginBottom: '20px',
+          textAlign: 'center'
         }}
       >
-        {/* Header Tag */}
-        <div style={{ marginBottom: '16px' }}>
-          <span
-            style={{
-              background: 'rgba(255, 42, 141, 0.2)',
-              border: '1px solid rgba(255, 42, 141, 0.5)',
-              color: '#ff758c',
-              padding: '6px 18px',
-              borderRadius: '20px',
-              fontSize: '0.8rem',
-              fontWeight: 800,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <Sparkles size={14} color="#fbbf24" /> THE COSMIC VAULT GATE 🌌
-          </span>
-        </div>
-
-        <h1
-          className="font-title gradient-text-magic"
+        <span
           style={{
-            fontSize: 'clamp(2.2rem, 5vw, 3.5rem)',
-            marginTop: '8px',
-            marginBottom: '8px',
-            lineHeight: '1.2'
+            background: 'rgba(251, 191, 36, 0.15)',
+            border: '1px solid rgba(251, 191, 36, 0.4)',
+            color: '#fbbf24',
+            padding: '6px 20px',
+            borderRadius: '20px',
+            fontSize: '0.8rem',
+            fontWeight: 800,
+            letterSpacing: '1.5px',
+            textTransform: 'uppercase',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px'
           }}
         >
-          Anshika Didi's Surprise
-        </h1>
+          <Sparkles size={14} color="#fbbf24" /> 30 AUGUST 2026 MIDNIGHT UNLOCK 👑
+        </span>
 
-        <p style={{ color: '#cbd5e1', fontSize: '0.95rem', marginBottom: '26px', maxWidth: '520px', margin: '0 auto 26px' }}>
-          The 3D Cosmic Vault is locked. It will automatically unlock and blast open on <span style={{ color: '#fbbf24', fontWeight: '800' }}>30 August 2026 at Midnight 12:00 AM IST</span>.
-        </p>
-
-        {/* Live Countdown Cards Grid */}
+        {/* Real-time Countdown Pills */}
         <div
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '12px',
-            marginBottom: '32px'
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '10px',
+            marginTop: '12px'
           }}
         >
           {[
-            { label: 'DAYS', value: timeLeft.days, color: '#ff2a8d' },
-            { label: 'HOURS', value: timeLeft.hours, color: '#a855f7' },
-            { label: 'MINUTES', value: timeLeft.minutes, color: '#38bdf8' },
-            { label: 'SECONDS', value: timeLeft.seconds, color: '#fbbf24' }
+            { label: 'DAYS', val: timeLeft.days },
+            { label: 'HRS', val: timeLeft.hours },
+            { label: 'MIN', val: timeLeft.minutes },
+            { label: 'SEC', val: timeLeft.seconds }
           ].map((item, idx) => (
-            <motion.div
+            <div
               key={idx}
-              whileHover={{ scale: 1.06 }}
               style={{
-                background: 'rgba(20, 15, 45, 0.75)',
-                border: `1px solid ${item.color}66`,
-                borderRadius: '20px',
-                padding: '16px 8px',
+                background: 'rgba(15, 10, 30, 0.85)',
+                border: '1px solid rgba(251, 191, 36, 0.3)',
+                borderRadius: '14px',
+                padding: '8px 14px',
                 textAlign: 'center',
-                boxShadow: `0 8px 24px ${item.color}33`
+                boxShadow: '0 4px 15px rgba(0,0,0,0.6)',
+                backdropFilter: 'blur(10px)'
               }}
             >
-              <div
-                className="font-title"
-                style={{
-                  fontSize: 'clamp(1.6rem, 4vw, 2.6rem)',
-                  fontWeight: 900,
-                  color: item.color,
-                  textShadow: `0 0 18px ${item.color}aa`
-                }}
-              >
-                {String(item.value).padStart(2, '0')}
-              </div>
-              <div
-                style={{
-                  fontSize: '0.68rem',
-                  fontWeight: 800,
-                  color: '#94a3b8',
-                  letterSpacing: '1px',
-                  marginTop: '4px'
-                }}
-              >
+              <span className="font-title" style={{ fontSize: '1.2rem', fontWeight: 900, color: idx === 3 ? '#ff2a8d' : '#fbbf24' }}>
+                {String(item.val).padStart(2, '0')}
+              </span>
+              <span style={{ fontSize: '0.6rem', color: '#94a3b8', display: 'block', fontWeight: 800, marginTop: '2px' }}>
                 {item.label}
-              </div>
-            </motion.div>
+              </span>
+            </div>
           ))}
         </div>
+      </motion.div>
 
-        {/* Teasing Toast Popup Notification */}
-        <AnimatePresence>
-          {toastMessage && (
-            <motion.div
-              initial={{ opacity: 0, y: 15, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.9 }}
-              style={{
-                background: 'rgba(255, 42, 141, 0.25)',
-                border: '1px solid rgba(255, 42, 141, 0.6)',
-                borderRadius: '16px',
-                padding: '12px 20px',
-                color: '#ffffff',
-                fontSize: '0.9rem',
-                fontWeight: 700,
-                marginBottom: '24px',
-                boxShadow: '0 8px 25px rgba(255, 42, 141, 0.4)'
-              }}
-            >
-              {toastMessage}
-            </motion.div>
-          )}
-        </AnimatePresence>
+      {/* The Majestic Golden Royal Gate & Lock Frame */}
+      <div
+        style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '540px',
+          height: '420px',
+          zIndex: 5,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        {/* Left Swinging Golden Gate Door */}
+        <motion.div
+          animate={{
+            rotateY: isGateOpening ? -100 : 0,
+            x: isGateOpening ? -180 : 0
+          }}
+          transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: '50%',
+            background: 'linear-gradient(135deg, rgba(30, 20, 60, 0.95) 0%, rgba(15, 10, 35, 0.98) 100%)',
+            border: '2px solid rgba(251, 191, 36, 0.6)',
+            borderRight: '1px solid rgba(251, 191, 36, 0.3)',
+            borderRadius: '24px 0 0 24px',
+            transformOrigin: 'left center',
+            boxShadow: 'inset 0 0 40px rgba(251, 191, 36, 0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+            paddingRight: '15px'
+          }}
+        >
+          {/* Gate Metallic Ornaments */}
+          <div style={{ border: '2px dashed rgba(251, 191, 36, 0.3)', width: '80%', height: '80%', borderRadius: '16px' }} />
+        </motion.div>
 
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px', flexWrap: 'wrap' }}>
-          <button
-            onClick={handlePokeVault}
-            className="glass-panel"
+        {/* Right Swinging Golden Gate Door */}
+        <motion.div
+          animate={{
+            rotateY: isGateOpening ? 100 : 0,
+            x: isGateOpening ? 180 : 0
+          }}
+          transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            position: 'absolute',
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: '50%',
+            background: 'linear-gradient(135deg, rgba(30, 20, 60, 0.95) 0%, rgba(15, 10, 35, 0.98) 100%)',
+            border: '2px solid rgba(251, 191, 36, 0.6)',
+            borderLeft: '1px solid rgba(251, 191, 36, 0.3)',
+            borderRadius: '0 24px 24px 0',
+            transformOrigin: 'right center',
+            boxShadow: 'inset 0 0 40px rgba(251, 191, 36, 0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            paddingLeft: '15px'
+          }}
+        >
+          {/* Gate Metallic Ornaments */}
+          <div style={{ border: '2px dashed rgba(251, 191, 36, 0.3)', width: '80%', height: '80%', borderRadius: '16px' }} />
+        </motion.div>
+
+        {/* Central Heavy Golden Lock Core */}
+        <motion.div
+          animate={{
+            scale: isKeyAnimating ? [1, 1.15, 0.95, 1] : 1,
+            rotate: isKeyAnimating ? [0, 15, -15, 0] : 0
+          }}
+          transition={{ duration: 1.2 }}
+          style={{
+            position: 'relative',
+            zIndex: 20,
+            width: '140px',
+            height: '140px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
+            border: '4px solid #ffffff',
+            boxShadow: '0 0 40px rgba(251, 191, 36, 0.8), inset 0 0 15px rgba(0,0,0,0.5)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer'
+          }}
+          onClick={handleKeyClick}
+        >
+          <Lock size={44} color="#070712" />
+          <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#070712', marginTop: '4px', letterSpacing: '1px' }}>
+            {isGateOpening ? 'UNLOCKED' : 'LOCKED'}
+          </span>
+        </motion.div>
+
+        {/* Animated Flying Key Element */}
+        <motion.div
+          animate={{
+            x: isKeyAnimating ? [140, 0, 0, 140] : 140,
+            y: isKeyAnimating ? [80, 0, 0, 80] : 80,
+            rotate: isKeyAnimating ? [0, 360, 720, 0] : 0,
+            scale: isKeyAnimating ? [1, 1.3, 1] : 1
+          }}
+          transition={{ duration: 1.5, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute',
+            zIndex: 30,
+            pointerEvents: 'none',
+            filter: 'drop-shadow(0 0 15px #fbbf24)'
+          }}
+        >
+          <Key size={48} color="#fbbf24" />
+        </motion.div>
+      </div>
+
+      {/* Teasing Message Card Popup */}
+      <AnimatePresence>
+        {activeMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 10, scale: 0.9 }}
             style={{
-              background: 'rgba(255, 42, 141, 0.15)',
+              position: 'relative',
+              zIndex: 30,
+              marginTop: '20px',
+              maxWidth: '520px',
+              width: '92%',
+              background: 'rgba(255, 42, 141, 0.22)',
+              border: '1px solid rgba(255, 42, 141, 0.6)',
+              borderRadius: '20px',
+              padding: '14px 20px',
+              textAlign: 'center',
               color: '#ffffff',
-              borderColor: 'rgba(255, 42, 141, 0.4)',
-              borderRadius: '24px',
-              padding: '10px 20px',
-              fontSize: '0.85rem',
+              fontSize: '0.95rem',
               fontWeight: 700,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px'
+              boxShadow: '0 8px 30px rgba(255, 42, 141, 0.4)',
+              backdropFilter: 'blur(12px)'
             }}
           >
-            <Lock size={16} color="#ff2a8d" />
-            <span>POKE THE VAULT 🔒</span>
-          </button>
+            {activeMessage}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          <button
-            onClick={() => {
-              soundEngine.playClick();
-              setShowKeyModal(true);
-            }}
-            style={{
-              background: 'rgba(251, 191, 36, 0.2)',
-              border: '1px solid rgba(251, 191, 36, 0.6)',
-              color: '#fbbf24',
-              borderRadius: '24px',
-              padding: '10px 20px',
-              fontSize: '0.85rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            <Key size={16} color="#fbbf24" />
-            <span>BROTHER OVERRIDE KEY 🔑</span>
-          </button>
-        </div>
+      {/* Bottom Interactive Key Action Buttons */}
+      <motion.div
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        style={{
+          position: 'relative',
+          zIndex: 30,
+          marginTop: '24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '14px',
+          flexWrap: 'wrap'
+        }}
+      >
+        <button
+          onClick={handleKeyClick}
+          disabled={isKeyAnimating || isGateOpening}
+          className="glow-button"
+          style={{ minWidth: '220px' }}
+        >
+          <Key size={20} />
+          <span>
+            {attemptCount === 0
+              ? 'CLICK KEY TO UNLOCK GATE 🔑'
+              : TEASING_ATTEMPTS[(attemptCount - 1) % TEASING_ATTEMPTS.length].btn}
+          </span>
+        </button>
+
+        <button
+          onClick={() => {
+            soundEngine.playClick();
+            setShowKeyModal(true);
+          }}
+          className="glass-panel"
+          style={{
+            background: 'rgba(157, 78, 221, 0.25)',
+            border: '1px solid rgba(157, 78, 221, 0.6)',
+            color: '#fbbf24',
+            borderRadius: '24px',
+            padding: '10px 20px',
+            fontSize: '0.85rem',
+            fontWeight: 700,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}
+        >
+          <ShieldCheck size={16} color="#fbbf24" />
+          <span>BROTHER OVERRIDE KEY 🔑</span>
+        </button>
       </motion.div>
 
       {/* Secret Brother Override Passcode Modal */}
