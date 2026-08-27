@@ -218,12 +218,13 @@ export default function CountdownLockGate({ onUnlock }) {
         style={{
           position: 'relative',
           width: '100%',
-          maxWidth: '540px',
-          height: '420px',
+          maxWidth: '520px',
+          height: 'clamp(250px, 36vh, 360px)',
           zIndex: 5,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          margin: '10px 0'
         }}
       >
         {/* Left Swinging Golden Gate Door */}
@@ -294,8 +295,8 @@ export default function CountdownLockGate({ onUnlock }) {
           style={{
             position: 'relative',
             zIndex: 20,
-            width: '140px',
-            height: '140px',
+            width: 'clamp(110px, 26vw, 135px)',
+            height: 'clamp(110px, 26vw, 135px)',
             borderRadius: '50%',
             background: 'linear-gradient(135deg, #fbbf24 0%, #d97706 100%)',
             border: '4px solid #ffffff',
@@ -308,7 +309,7 @@ export default function CountdownLockGate({ onUnlock }) {
           }}
           onClick={handleKeyClick}
         >
-          <Lock size={44} color="#070712" />
+          <Lock size={38} color="#070712" />
           <span style={{ fontSize: '0.65rem', fontWeight: 900, color: '#070712', marginTop: '4px', letterSpacing: '1px' }}>
             {isGateOpening ? 'UNLOCKED' : 'LOCKED'}
           </span>
@@ -317,8 +318,8 @@ export default function CountdownLockGate({ onUnlock }) {
         {/* Animated Flying Key Element */}
         <motion.div
           animate={{
-            x: isKeyAnimating ? [140, 0, 0, 140] : 140,
-            y: isKeyAnimating ? [80, 0, 0, 80] : 80,
+            x: isKeyAnimating ? [0, 0, 0, 0] : 0,
+            y: isKeyAnimating ? [120, 0, 0, 120] : 120,
             rotate: isKeyAnimating ? [0, 360, 720, 0] : 0,
             scale: isKeyAnimating ? [1, 1.3, 1] : 1
           }}
@@ -330,7 +331,7 @@ export default function CountdownLockGate({ onUnlock }) {
             filter: 'drop-shadow(0 0 15px #fbbf24)'
           }}
         >
-          <Key size={48} color="#fbbf24" />
+          <Key size={44} color="#fbbf24" />
         </motion.div>
       </div>
 
