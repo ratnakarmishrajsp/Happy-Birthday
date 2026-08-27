@@ -61,7 +61,7 @@ export const memoryPhotos = [
     fallback: getPlaceholderPhoto(4, "Auto Ride Comedy", "#38bdf8", "#a855f7"),
     caption: "Me making goofy funny faces while Didi tries her best to look aesthetic! Every auto ride with Didi turns into a comedy show filled with laughter and endless gossip.",
     year: "Daily Rides",
-    rotate: 90,
+    rotate: 0,
     aspectRatio: "3/4"
   },
   {
@@ -81,7 +81,7 @@ export const memoryPhotos = [
     fallback: getPlaceholderPhoto(6, "Face Mask Spa Day", "#a855f7", "#6366f1"),
     caption: "Face mask cream on, heart pom-pom headband locked in! Who needs an expensive parlor when you can do a chaotic home spa day with Didi and laugh till your mask cracks?",
     year: "Home Fun",
-    rotate: 90,
+    rotate: 0,
     aspectRatio: "3/4"
   },
   {

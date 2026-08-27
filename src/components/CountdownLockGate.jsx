@@ -613,7 +613,7 @@ export default function CountdownLockGate({ onUnlock }) {
                   type="password"
                   value={passcode}
                   onChange={(e) => setPasscode(e.target.value)}
-                  placeholder="Enter passcode (e.g. 0830)"
+                  placeholder="Enter secret passcode"
                   style={{
                     width: '100%',
                     padding: '12px 16px',
@@ -630,7 +630,7 @@ export default function CountdownLockGate({ onUnlock }) {
 
                 {passError && (
                   <p style={{ color: '#ef4444', fontSize: '0.8rem', marginBottom: '12px' }}>
-                    Incorrect Key! Hint: Use 0830 or ratnakar
+                    Incorrect Passcode! Try again.
                   </p>
                 )}
 

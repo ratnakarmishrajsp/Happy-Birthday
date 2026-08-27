@@ -142,15 +142,16 @@ export default function Section08_MemoryUniverse({ onNextSection }) {
                   width: '100%',
                   borderRadius: '16px',
                   overflow: 'hidden',
-                  marginBottom: '20px',
+                  marginBottom: '16px',
                   background: '#090a15',
                   border: '2px solid rgba(255, 42, 141, 0.4)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  minHeight: '260px',
-                  maxHeight: '52vh',
-                  padding: '8px'
+                  minHeight: '200px',
+                  maxHeight: '42vh',
+                  padding: '8px',
+                  flexShrink: 0
                 }}
               >
                 <img
@@ -162,7 +163,7 @@ export default function Section08_MemoryUniverse({ onNextSection }) {
                   alt={selectedOrb.title}
                   style={{
                     maxWidth: '100%',
-                    maxHeight: '48vh',
+                    maxHeight: '38vh',
                     width: 'auto',
                     height: 'auto',
                     objectFit: 'contain',
@@ -173,23 +174,26 @@ export default function Section08_MemoryUniverse({ onNextSection }) {
                 />
               </div>
 
-              {/* Badge & Year */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#ff2a8d', letterSpacing: '1px', textTransform: 'uppercase' }}>
-                  MEMORY #{selectedOrb.id} • {selectedOrb.year}
-                </span>
-                <Sparkles size={14} color="#fbbf24" />
+              {/* Scrollable Story Details Container */}
+              <div style={{ overflowY: 'auto', maxHeight: '35vh', paddingRight: '4px' }}>
+                {/* Badge & Year */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: '800', color: '#ff2a8d', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                    MEMORY #{selectedOrb.id} • {selectedOrb.year}
+                  </span>
+                  <Sparkles size={14} color="#fbbf24" />
+                </div>
+
+                {/* Title */}
+                <h3 className="font-title" style={{ fontSize: '1.4rem', color: '#fff', margin: '4px 0 10px 0' }}>
+                  {selectedOrb.title}
+                </h3>
+
+                {/* Emotion / Pose Story Text */}
+                <p style={{ color: '#cbd5e1', fontSize: '1rem', lineHeight: '1.6', background: 'rgba(255, 255, 255, 0.06)', padding: '14px 18px', borderRadius: '12px', borderLeft: '4px solid #ff2a8d' }}>
+                  "{selectedOrb.caption}"
+                </p>
               </div>
-
-              {/* Title */}
-              <h3 className="font-title" style={{ fontSize: '1.5rem', color: '#fff', margin: '4px 0 10px 0' }}>
-                {selectedOrb.title}
-              </h3>
-
-              {/* Emotion / Pose Story Text */}
-              <p style={{ color: '#cbd5e1', fontSize: '1.05rem', lineHeight: '1.6', background: 'rgba(255, 255, 255, 0.05)', padding: '14px 18px', borderRadius: '12px', borderLeft: '4px solid #ff2a8d' }}>
-                "{selectedOrb.caption}"
-              </p>
             </motion.div>
           </motion.div>
         )}
