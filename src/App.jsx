@@ -112,11 +112,11 @@ export default function App() {
         <Section01_Loading onComplete={() => setIsLoading(false)} />
       ) : (
         <>
-          {/* Bottom Stage Navigation Bar */}
-          <header
+          {/* Bottom Stage Navigation Footer */}
+          <footer
             style={{
               position: 'fixed',
-              bottom: '16px',
+              bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))',
               left: '50%',
               transform: 'translateX(-50%)',
               zIndex: 9998,
@@ -124,14 +124,14 @@ export default function App() {
               alignItems: 'center',
               justifyContent: 'space-between',
               gap: '12px',
-              padding: '8px 16px',
+              padding: '10px 18px',
               width: '92%',
               maxWidth: '850px',
               borderRadius: '30px',
-              background: 'rgba(15, 10, 30, 0.88)',
-              backdropFilter: 'blur(18px)',
-              border: '1px solid rgba(255, 42, 141, 0.35)',
-              boxShadow: '0 -5px 30px rgba(0,0,0,0.8)'
+              background: 'rgba(15, 10, 30, 0.92)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 42, 141, 0.4)',
+              boxShadow: '0 -8px 32px rgba(0, 0, 0, 0.85)'
             }}
           >
             {/* Back Button */}
@@ -201,7 +201,7 @@ export default function App() {
                 {progressPercent}%
               </div>
             </div>
-          </header>
+          </footer>
 
           {/* Main Stage View Container (Single Active Screen Architecture) */}
           <main style={{ position: 'relative', zIndex: 1, minHeight: '100vh', width: '100%', paddingTop: '60px', paddingBottom: '90px' }}>
